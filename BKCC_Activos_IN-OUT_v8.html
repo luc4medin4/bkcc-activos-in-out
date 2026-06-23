@@ -230,7 +230,8 @@
   .analysis-table-card h3 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 14px; }
   .a-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
   .a-tbl th { padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); background: var(--surface2); }
-  .a-tbl td { padding: 7px 12px; border-bottom: 1px solid rgba(46,52,80,.5); }
+  .a-tbl th.num-r { text-align: right; }
+  .a-tbl td { padding: 7px 12px; border-bottom: 1px solid rgba(46,52,80,.5); vertical-align: middle; }
   .a-tbl tr:last-child td { border-bottom: none; }
   .a-tbl tr:hover td { background: var(--surface2); }
   .num-r { text-align: right; font-variant-numeric: tabular-nums; }
@@ -956,9 +957,17 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
           </div>
 
           <div class="analysis-table-card">
-            <h3 id="nac-monthly-title">Balance Mensual NAC — Año en curso <span style="font-size:10px;font-weight:400;color:var(--muted)">(USD Oficial ref: ~$1.460)</span></h3>
+            <h3 id="nac-daily-title">📅 Análisis Diario NAC — días con registros <span style="font-size:10px;font-weight:400;color:var(--muted)">(% = Bultos NAC ÷ Bultos 2776 Araceli del mismo día)</span></h3>
+            <div class="table-wrap"><table class="a-tbl" id="tbl-nac-daily">
+              <thead><tr><th>Fecha</th><th class="num-r">Bultos NAC</th><th class="num-r">Bultos 2776</th><th class="num-r">% NAC</th><th class="num-r">Target</th><th>Estado</th><th class="num-r">Importe ARS</th></tr></thead>
+              <tbody id="tbody-nac-daily"></tbody>
+            </table></div>
+          </div>
+
+          <div class="analysis-table-card">
+            <h3 id="nac-monthly-title">📆 Análisis Mensual NAC — Año en curso <span style="font-size:10px;font-weight:400;color:var(--muted)">(USD Oficial ref: ~$1.460)</span></h3>
             <div class="table-wrap"><table class="a-tbl" id="tbl-nac-monthly">
-              <thead><tr><th>Mes</th><th class="num-r">Bultos</th><th class="num-r">Importe ARS</th><th class="num-r" id="nac-usd-col-hdr">USD Eq.</th><th class="num-r">Acum. ARS</th><th class="num-r">Facturas</th></tr></thead>
+              <thead><tr><th>Mes</th><th class="num-r">Bultos NAC</th><th class="num-r">Bultos 2776</th><th class="num-r">% NAC</th><th class="num-r">Target</th><th>Estado</th><th class="num-r">Importe ARS</th><th class="num-r" id="nac-usd-col-hdr">USD Eq.</th><th class="num-r">Acum. ARS</th><th class="num-r">Facturas</th></tr></thead>
               <tbody id="tbody-nac-monthly"></tbody>
             </table></div>
             <div style="margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -972,10 +981,10 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
           <div class="analysis-table-card">
             <h3 id="nac-comp-title">📊 Comparativo Histórico — % NAC vs Target (<span id="nac-comp-target-lbl">0,250%</span>)</h3>
             <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">
-              El % NAC = Bultos NAC ÷ Cantidad de Remitos del período. No alcanza con mirar el importe en pesos: ese monto depende de cuántos retiros (remitos) hubo. Un importe alto con muchos remitos puede ser un % sano; un importe bajo con pocos remitos puede ser un % malo. El % es la métrica comparable entre años.
+              El % NAC = Bultos NAC ÷ Bultos Araceli (cód 2776) ingresados ese período. La clave es el denominador: cuántos bultos del cód 2776 BOT ARACELI ingresaron ese día/mes según los Retiros. Target: 0,250%. Si no hay retiros del 2776 cargados para ese período, el % aparece como "—".
             </div>
             <div class="table-wrap"><table class="a-tbl" id="tbl-nac-comparativo">
-              <thead><tr><th>Año</th><th class="num-r">% NAC Promedio</th><th class="num-r">Target</th><th>vs Target</th></tr></thead>
+              <thead><tr><th>Año</th><th class="num-r">% NAC Promedio</th><th class="num-r">Bultos 2776</th><th class="num-r">Target</th><th>vs Target</th></tr></thead>
               <tbody id="tbody-nac-comparativo"></tbody>
             </table></div>
           </div>
@@ -1046,6 +1055,20 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
               <tbody id="tbody-chep-centro"></tbody>
             </table></div>
           </div>
+          <div class="analysis-table-card">
+            <h3>📆 Balance Mensual CHEP — Año seleccionado</h3>
+            <div class="table-wrap"><table class="a-tbl">
+              <thead><tr><th>Mes</th><th class="num-r">Ingresos</th><th class="num-r">Retiros</th><th class="num-r">Balance mes</th><th class="num-r">Acumulado</th><th>Estado</th></tr></thead>
+              <tbody id="tbody-chep-monthly"></tbody>
+            </table></div>
+          </div>
+          <div class="analysis-table-card">
+            <h3>📅 Balance Anual CHEP — comparativo por año</h3>
+            <div class="table-wrap"><table class="a-tbl">
+              <thead><tr><th>Año</th><th class="num-r">Ingresos</th><th class="num-r">Retiros</th><th class="num-r">Balance</th><th>Estado</th></tr></thead>
+              <tbody id="tbody-chep-anual"></tbody>
+            </table></div>
+          </div>
         </div>
       </div>
 
@@ -1062,6 +1085,20 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
             <div class="table-wrap"><table class="a-tbl" id="tbl-activos-calibre">
               <thead><tr><th>Calibre</th><th class="num-r">Ing. Bultos</th><th class="num-r">Ret. Bultos</th><th class="num-r">Ing. HL</th><th class="num-r">Ret. HL</th><th class="num-r">Balance HL</th></tr></thead>
               <tbody id="tbody-activos-calibre"></tbody>
+            </table></div>
+          </div>
+          <div class="analysis-table-card">
+            <h3>📆 Balance Mensual Activos — Año seleccionado</h3>
+            <div class="table-wrap"><table class="a-tbl">
+              <thead><tr><th>Mes</th><th class="num-r">Ing. Bultos</th><th class="num-r">Ret. Bultos</th><th class="num-r">Bal. Bultos</th><th class="num-r">Ing. HL</th><th class="num-r">Ret. HL</th><th class="num-r">Bal. HL</th><th class="num-r">Acum. HL</th></tr></thead>
+              <tbody id="tbody-activos-monthly"></tbody>
+            </table></div>
+          </div>
+          <div class="analysis-table-card">
+            <h3>📅 Balance Anual Activos — comparativo por año</h3>
+            <div class="table-wrap"><table class="a-tbl">
+              <thead><tr><th>Año</th><th class="num-r">Ing. Bultos</th><th class="num-r">Ret. Bultos</th><th class="num-r">Ing. HL</th><th class="num-r">Ret. HL</th><th class="num-r">Balance HL</th></tr></thead>
+              <tbody id="tbody-activos-anual"></tbody>
             </table></div>
           </div>
         </div>
@@ -2437,25 +2474,27 @@ function buildNACNarrativa(nacRows, opts) {
 }
 
 // ============================================================
-//  NAC — % NAC = Bultos NAC ÷ Cantidad de Remitos (del mismo mes, sección Retiros)
-//  Remitos = cantidad de remitos ÚNICOS con producto real (excluye envases/botellas/esqueletos
-//  y los códigos que en NAC representan quebrados: 2706, 2730, 2731, 2776, 2780, 2755, 2756).
+//  NAC — % NAC = Bultos NAC ÷ Bultos cód 2776 (BOT ARACELI) del mismo día/mes (Sección Retiros)
+//  La clave es: para cada día, sumar cuántos bultos del cód 2776 ingresaron (retiros),
+//  y dividir los bultos NAC de ese día por esa cantidad. Target: 0.25%
 // ============================================================
 const NAC_TARGET_PCT = 0.0025; // 0,250%
-const NAC_EXCLUDE_COD_REMITOS = new Set(['2706','2730','2731','2776','2780','2755','2756']);
+const NAC_COD_DENOM = '2776'; // Cod Araceli Bot — denominador del % NAC
 
-function nac_remitosConProductoPorMes(yr, mo) {
-  // mo en formato '01'..'12'
+// Devuelve un mapa {fecha_DDMMYYYY: bultos2776} sumando todos los retiros del cód 2776 por día
+function nac_bultos2776PorDia(yr, mo) {
   const store = loadStore('retiros');
-  if(!store || !store.rows.length) return null; // sin datos cargados de Retiros para evaluar
+  if(!store || !store.rows.length) return null;
   const h = store.headers || [];
   const fIdx = h.findIndex(x=>/fecha/i.test(x));
-  const numIdx = h.findIndex(x=>/n[uú]mero/i.test(x));
   const codIdx = h.findIndex(x=>/art[ií]culo/i.test(x) && !/descrip/i.test(x));
+  const cantIdx = h.findIndex(x=>/cantidad|bultos|cant\b/i.test(x));
   const anuIdx = h.findIndex(x=>/anulad/i.test(x));
-  if(fIdx<0 || numIdx<0) return null;
-  const set = new Set();
+  if(fIdx<0 || codIdx<0) return null;
+  const map = {}; // fecha_str → bultos
   store.rows.forEach(r=>{
+    const cod = String(r.cols[codIdx]||'').trim();
+    if(cod !== NAC_COD_DENOM) return;
     const fechaStr = r.cols[fIdx];
     const ts = parseDDMMYYYY(fechaStr);
     if(!isFinite(ts)) return;
@@ -2464,24 +2503,39 @@ function nac_remitosConProductoPorMes(yr, mo) {
     const rm = String(d.getMonth()+1).padStart(2,'0');
     if(String(ry)!==String(yr) || rm!==mo) return;
     if(anuIdx>=0 && /^s[ií]$/i.test(String(r.cols[anuIdx]||''))) return;
-    const cod = codIdx>=0 ? String(r.cols[codIdx]||'') : '';
-    if(NAC_EXCLUDE_COD_REMITOS.has(cod)) return;
-    set.add(r.cols[numIdx]);
+    const cant = cantIdx>=0 ? (parseFloat(r.cols[cantIdx])||1) : 1; // si no hay col cant, cuenta 1 por fila
+    const key = fechaStr;
+    map[key] = (map[key]||0) + cant;
   });
-  return set.size || null;
+  return Object.keys(map).length ? map : null;
+}
+
+// Suma los bultos 2776 del mes entero desde el mapa diario
+function nac_totalBultos2776Mes(yr, mo) {
+  const mapDia = nac_bultos2776PorDia(yr, mo);
+  if(!mapDia) return null;
+  let total = 0;
+  Object.values(mapDia).forEach(v=>total+=v);
+  return total || null;
 }
 
 function nac_pctParaMes(yr, mo, bultosNAC) {
-  const remitos = nac_remitosConProductoPorMes(yr, mo);
-  if(!remitos) return null; // sin datos de Retiros ese mes → no se puede calcular
-  return bultosNAC / remitos;
+  const total2776 = nac_totalBultos2776Mes(yr, mo);
+  if(!total2776) return null;
+  return bultosNAC / total2776;
+}
+
+// Devuelve % NAC para una fecha específica (para análisis diario)
+function nac_pctParaDia(fechaStr, bultosNAC, mapaDia) {
+  if(!mapaDia || !mapaDia[fechaStr]) return null;
+  return bultosNAC / mapaDia[fechaStr];
 }
 
 function nac_calcMensual(yearVal) {
-  // Devuelve {mes(1-12): {bultos, importe, pct|null}} usando datos reales del store 'nac' + retiros
+  // Devuelve {mes(1-12): {bultos, importe, bultos2776, pct|null}} usando datos reales del store 'nac' + retiros
   const store = loadStore('nac');
   const monthMap = {};
-  MESES.forEach((_,i)=>{ monthMap[String(i+1).padStart(2,'0')] = {bultos:0, importe:0}; });
+  MESES.forEach((_,i)=>{ monthMap[String(i+1).padStart(2,'0')] = {bultos:0, importe:0, bultos2776:null}; });
   (store?store.rows:[]).forEach(r=>{
     if(String(r.cols[1])!==String(yearVal)) return;
     const mo = String(r.cols[2]).padStart(2,'0');
@@ -2490,9 +2544,57 @@ function nac_calcMensual(yearVal) {
     monthMap[mo].importe += parseARS(r.cols[8]);
   });
   Object.keys(monthMap).forEach(mo=>{
-    monthMap[mo].pct = nac_pctParaMes(yearVal, mo, monthMap[mo].bultos);
+    const b2776 = nac_totalBultos2776Mes(yearVal, mo);
+    monthMap[mo].bultos2776 = b2776;
+    monthMap[mo].pct = b2776 ? monthMap[mo].bultos / b2776 : null;
   });
   return monthMap;
+}
+
+// Calcula análisis diario NAC para un año/mes dado
+function nac_calcDiario(yearVal, moVal) {
+  // moVal: '01'..'12' o null para todo el año
+  const storeNAC = loadStore('nac');
+  const storeRet = loadStore('retiros');
+  if(!storeNAC || !storeRet) return [];
+  const h = storeRet.headers || [];
+  const fIdx = h.findIndex(x=>/fecha/i.test(x));
+  const codIdx = h.findIndex(x=>/art[ií]culo/i.test(x) && !/descrip/i.test(x));
+  const cantIdx = h.findIndex(x=>/cantidad|bultos|cant\b/i.test(x));
+  const anuIdx = h.findIndex(x=>/anulad/i.test(x));
+  // Mapa de bultos 2776 por fecha
+  const map2776 = {};
+  storeRet.rows.forEach(r=>{
+    const cod = String(r.cols[codIdx>=0?codIdx:0]||'').trim();
+    if(cod !== NAC_COD_DENOM) return;
+    const fechaStr = r.cols[fIdx>=0?fIdx:0];
+    const ts = parseDDMMYYYY(fechaStr);
+    if(!isFinite(ts)) return;
+    const d = new Date(ts);
+    if(String(d.getFullYear())!==String(yearVal)) return;
+    if(moVal && String(d.getMonth()+1).padStart(2,'0') !== moVal) return;
+    if(anuIdx>=0 && /^s[ií]$/i.test(String(r.cols[anuIdx]||''))) return;
+    const cant = cantIdx>=0 ? (parseFloat(r.cols[cantIdx])||1) : 1;
+    map2776[fechaStr] = (map2776[fechaStr]||0) + cant;
+  });
+  // Mapa de bultos NAC por fecha
+  const mapNAC = {};
+  storeNAC.rows.forEach(r=>{
+    if(String(r.cols[1])!==String(yearVal)) return;
+    if(moVal && String(r.cols[2]).padStart(2,'0')!==moVal) return;
+    const fecha = r.cols[0];
+    if(!mapNAC[fecha]) mapNAC[fecha] = {bultos:0, importe:0};
+    mapNAC[fecha].bultos += parseFloat(r.cols[7])||0;
+    mapNAC[fecha].importe += parseARS(r.cols[8]);
+  });
+  // Combinar: solo días con NAC
+  const dias = Object.keys(mapNAC).sort((a,b)=>parseDDMMYYYY(b)-parseDDMMYYYY(a));
+  return dias.map(fecha=>{
+    const b2776 = map2776[fecha] || null;
+    const bNAC = mapNAC[fecha].bultos;
+    const pct = b2776 ? bNAC / b2776 : null;
+    return { fecha, bultos: bNAC, importe: mapNAC[fecha].importe, bultos2776: b2776, pct };
+  });
 }
 
 function nac_promedioAnual(monthMap) {
@@ -2534,16 +2636,24 @@ function renderNACComparativoYCruzada() {
   const tbodyComp = document.getElementById('tbody-nac-comparativo');
   if(tbodyComp) {
     tbodyComp.innerHTML = compRows.map(({yr,avg,imputado})=>{
-      if(avg===null) return `<tr style="opacity:.45"><td><strong>${yr}</strong></td><td class="num-r">—</td><td class="num-r">${(NAC_TARGET_PCT*100).toFixed(3)}%</td><td>Sin datos</td></tr>`;
+      if(avg===null) return `<tr style="opacity:.45"><td><strong>${yr}</strong></td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">${(NAC_TARGET_PCT*100).toFixed(3)}%</td><td>Sin datos</td></tr>`;
       const diff = avg - NAC_TARGET_PCT;
       const ok = diff<=0;
       const color = ok?'var(--c-green)':'var(--c-red)';
       const dot = ok?'🟢':'🔴';
+      // Calcular total bultos 2776 del año para info
+      let total2776yr = 0;
+      for(let m=1;m<=12;m++){
+        const mo = String(m).padStart(2,'0');
+        const b = nac_totalBultos2776Mes(yr,mo);
+        if(b) total2776yr += b;
+      }
       return `<tr><td><strong>${yr}</strong>${imputado?' <span title="Incluye promedio de meses disponibles del año en curso para los meses sin datos NAC" style="font-size:10px;color:var(--muted);">(parcial)</span>':''}</td>
         <td class="num-r" style="color:${color};font-weight:700;">${(avg*100).toFixed(3)}%</td>
+        <td class="num-r" style="color:var(--c-ink-soft);">${total2776yr?fmtN(total2776yr):'—'}</td>
         <td class="num-r">${(NAC_TARGET_PCT*100).toFixed(3)}%</td>
         <td><span style="color:${color};">${dot} ${diff>=0?'+':''}${(diff*100).toFixed(3)}pp</span></td></tr>`;
-    }).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:14px;">Sin años con datos.</td></tr>';
+    }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:14px;">Sin años con datos.</td></tr>';
   }
   const targetLbl = (NAC_TARGET_PCT*100).toFixed(3).replace('.',',')+'%';
   const tEl1 = document.getElementById('nac-comp-target-lbl'); if(tEl1) tEl1.textContent = targetLbl;
@@ -2573,7 +2683,7 @@ function renderNACComparativoYCruzada() {
     }).join('');
   }
   const nota = document.getElementById('nac-cruzada-nota');
-  if(nota) nota.textContent = `% NAC = Bultos NAC ÷ Cantidad de Remitos con producto (Exportaciones → Retiros) del mismo mes. Si el mes no tiene Retiros cargados, se muestra "—" (no se puede calcular el %, aunque haya importe NAC).`;
+  if(nota) nota.textContent = `% NAC = Bultos NAC ÷ Bultos Araceli cód 2776 ingresados ese mes (Exportaciones → Retiros). Si el mes no tiene retiros del cód 2776 cargados, se muestra "—". Target: 0,250%.`;
 }
 
 // --- Alerta: remitos/facturas NAC individuales con % muy alto sobre el total de bultos despachados ese mes ---
@@ -2767,6 +2877,9 @@ function renderAnalysis() {
   // Charts
   renderHBarChart('chart-chep-calibre', Object.entries(calibreMap).map(([cal,d])=>({label:cal,value:d.ing-d.ret})), 'var(--warn)');
   renderHBarChart('chart-chep-centro', Object.entries(centroMap).sort((a,b)=>b[1].ing-a[1].ing).map(([c,d])=>({label:c,value:d.ing})), 'var(--accent)');
+  // Análisis mensual y anual CHEP
+  renderCHEPExportMonthly(yearVal);
+  renderCHEPExportAnual();
 
   // ============================================================
   // ACTIVOS EXPORT ANALYSIS
@@ -2809,9 +2922,120 @@ function renderAnalysis() {
     const balH=d.ingH-d.retH;
     return`<tr><td>${esc(cal)}</td><td class="num-r">${fmtN(d.ingB)}</td><td class="num-r">${fmtN(d.retB)}</td><td class="num-r">${d.ingH.toFixed(1)}</td><td class="num-r">${d.retH.toFixed(1)}</td><td class="num-r" style="${balH<0?'color:var(--danger)':''}">${balH>=0?'+':''}${balH.toFixed(1)}</td></tr>`;
   }).join('')||'<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:12px">Sin datos</td></tr>';
+  // Análisis mensual y anual Activos
+  renderActivosExportMonthly(yearVal);
+  renderActivosExportAnual();
   // Monthly balance tables
   renderSEMonthlyBalance();
+  renderNACDailyTable();
   renderNACMonthlyTable();
+}
+
+// ============================================================
+//  CHEP EXPORT — ANÁLISIS MENSUAL Y ANUAL
+// ============================================================
+function chepExport_parseRows(store) {
+  const h=(store&&store.headers)||[];
+  const cYearIdx=h.indexOf('Fecha - Año'); const cMonthIdx=h.indexOf('Fecha - Mes');
+  const cMovIdx=h.indexOf('Movimiento'); const cBultosIdx=h.indexOf('Bultos');
+  const monthNames=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  return (store?store.rows:[]).map(r=>{
+    const yr=String(r.cols[cYearIdx>=0?cYearIdx:5]||'');
+    const rmRaw=String(r.cols[cMonthIdx>=0?cMonthIdx:6]||'').toLowerCase();
+    let mo=rmRaw; if(isNaN(parseInt(rmRaw,10))){ const mi=monthNames.indexOf(rmRaw); mo=mi>=0?String(mi+1):rmRaw; }
+    mo=mo.padStart(2,'0');
+    const mov=r.cols[cMovIdx>=0?cMovIdx:8]||'';
+    const bultos=Math.abs(parseFloat(r.cols[cBultosIdx>=0?cBultosIdx:9])||0);
+    const isIng=mov.toLowerCase().includes('ingreso');
+    return {yr, mo, bultos, isIng};
+  });
+}
+function renderCHEPExportMonthly(yearVal) {
+  const tbody = document.getElementById('tbody-chep-monthly');
+  if(!tbody) return;
+  const store=loadStore('chep');
+  const parsed=chepExport_parseRows(store).filter(r=>!yearVal||r.yr===yearVal);
+  const mmap={};
+  MESES.forEach((_,i)=>{ mmap[String(i+1).padStart(2,'0')]={ing:0,ret:0}; });
+  parsed.forEach(r=>{ if(!mmap[r.mo]) return; if(r.isIng) mmap[r.mo].ing+=r.bultos; else mmap[r.mo].ret+=r.bultos; });
+  let accum=0;
+  tbody.innerHTML=MESES.map((mes,i)=>{
+    const m=String(i+1).padStart(2,'0');
+    const d=mmap[m];
+    if(!d.ing&&!d.ret) return `<tr style="opacity:.4"><td>${mes}</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td>—</td></tr>`;
+    const bal=d.ing-d.ret; accum+=bal;
+    const col=bal<0?'var(--c-red)':bal>0?'var(--c-teal)':'var(--c-green)';
+    return `<tr><td><strong>${mes}</strong></td><td class="num-r">${fmtN(d.ing)}</td><td class="num-r">${fmtN(d.ret)}</td><td class="num-r" style="color:${col};font-weight:700;">${bal>=0?'+':''}${fmtN(bal)}</td><td class="num-r" style="color:${accum<0?'var(--c-red)':'var(--c-teal)'}">${accum>=0?'+':''}${fmtN(accum)}</td><td><span style="color:${bal===0?'var(--c-green)':bal<0?'var(--c-red)':'var(--c-teal)'};font-weight:600;font-size:11px;">${bal===0?'✅ OK':bal<0?'🔴 DEUDA':'🔵 A FAVOR'}</span></td></tr>`;
+  }).join('');
+}
+function renderCHEPExportAnual() {
+  const tbody = document.getElementById('tbody-chep-anual');
+  if(!tbody) return;
+  const store=loadStore('chep');
+  const parsed=chepExport_parseRows(store);
+  const ymap={};
+  parsed.forEach(r=>{ if(!ymap[r.yr]) ymap[r.yr]={ing:0,ret:0}; if(r.isIng) ymap[r.yr].ing+=r.bultos; else ymap[r.yr].ret+=r.bultos; });
+  const years=Object.keys(ymap).sort();
+  if(!years.length){ tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:14px">Sin datos anuales</td></tr>'; return; }
+  tbody.innerHTML=years.map(yr=>{
+    const d=ymap[yr]; const bal=d.ing-d.ret;
+    const col=bal<0?'var(--c-red)':bal>0?'var(--c-teal)':'var(--c-green)';
+    return `<tr><td><strong>${yr}</strong></td><td class="num-r">${fmtN(d.ing)}</td><td class="num-r">${fmtN(d.ret)}</td><td class="num-r" style="color:${col};font-weight:700;">${bal>=0?'+':''}${fmtN(bal)}</td><td><span style="color:${col};font-weight:600;font-size:11px;">${bal===0?'✅ OK':bal<0?'🔴 DEUDA':'🔵 A FAVOR'}</span></td></tr>`;
+  }).join('');
+}
+
+// ============================================================
+//  ACTIVOS EXPORT — ANÁLISIS MENSUAL Y ANUAL
+// ============================================================
+function activosExport_parseRows(store) {
+  const h=(store&&store.headers)||[];
+  const aYearIdx=h.indexOf('Fecha - Año'); const aMonthIdx=h.indexOf('Fecha - Mes');
+  const aMovIdx=h.indexOf('Movimiento'); const aBultosIdx=h.indexOf('Bultos'); const aHLIdx=h.indexOf('HL');
+  const monthNames=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  return (store?store.rows:[]).map(r=>{
+    const yr=String(r.cols[aYearIdx>=0?aYearIdx:5]||'');
+    const rmRaw=String(r.cols[aMonthIdx>=0?aMonthIdx:6]||'').toLowerCase();
+    let mo=rmRaw; if(isNaN(parseInt(rmRaw,10))){ const mi=monthNames.indexOf(rmRaw); mo=mi>=0?String(mi+1):rmRaw; }
+    mo=mo.padStart(2,'0');
+    const mov=r.cols[aMovIdx>=0?aMovIdx:8]||'';
+    const bultos=Math.abs(parseFloat(r.cols[aBultosIdx>=0?aBultosIdx:9])||0);
+    const hl=Math.abs(parseFloat(r.cols[aHLIdx>=0?aHLIdx:10])||0);
+    const isIng=mov.toLowerCase().includes('ingreso');
+    return {yr, mo, bultos, hl, isIng};
+  });
+}
+function renderActivosExportMonthly(yearVal) {
+  const tbody = document.getElementById('tbody-activos-monthly');
+  if(!tbody) return;
+  const store=loadStore('activos');
+  const parsed=activosExport_parseRows(store).filter(r=>!yearVal||r.yr===yearVal);
+  const mmap={};
+  MESES.forEach((_,i)=>{ mmap[String(i+1).padStart(2,'0')]={ingB:0,retB:0,ingH:0,retH:0}; });
+  parsed.forEach(r=>{ if(!mmap[r.mo]) return; if(r.isIng){mmap[r.mo].ingB+=r.bultos;mmap[r.mo].ingH+=r.hl;}else{mmap[r.mo].retB+=r.bultos;mmap[r.mo].retH+=r.hl;} });
+  let accumH=0;
+  tbody.innerHTML=MESES.map((mes,i)=>{
+    const m=String(i+1).padStart(2,'0');
+    const d=mmap[m];
+    if(!d.ingB&&!d.retB) return `<tr style="opacity:.4"><td>${mes}</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td>—</td></tr>`;
+    const balB=d.ingB-d.retB; const balH=d.ingH-d.retH; accumH+=balH;
+    const col=balH<0?'var(--c-red)':balH>0?'var(--c-teal)':'var(--c-green)';
+    return `<tr><td><strong>${mes}</strong></td><td class="num-r">${fmtN(d.ingB)}</td><td class="num-r">${fmtN(d.retB)}</td><td class="num-r" style="color:${col};">${balB>=0?'+':''}${fmtN(balB)}</td><td class="num-r">${d.ingH.toFixed(1)}</td><td class="num-r">${d.retH.toFixed(1)}</td><td class="num-r" style="color:${col};font-weight:700;">${balH>=0?'+':''}${balH.toFixed(1)}</td><td class="num-r" style="color:${accumH<0?'var(--c-red)':'var(--c-teal)'}">${accumH>=0?'+':''}${accumH.toFixed(1)}</td></tr>`;
+  }).join('');
+}
+function renderActivosExportAnual() {
+  const tbody = document.getElementById('tbody-activos-anual');
+  if(!tbody) return;
+  const store=loadStore('activos');
+  const parsed=activosExport_parseRows(store);
+  const ymap={};
+  parsed.forEach(r=>{ if(!ymap[r.yr]) ymap[r.yr]={ingB:0,retB:0,ingH:0,retH:0}; if(r.isIng){ymap[r.yr].ingB+=r.bultos;ymap[r.yr].ingH+=r.hl;}else{ymap[r.yr].retB+=r.bultos;ymap[r.yr].retH+=r.hl;} });
+  const years=Object.keys(ymap).sort();
+  if(!years.length){ tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">Sin datos anuales</td></tr>'; return; }
+  tbody.innerHTML=years.map(yr=>{
+    const d=ymap[yr]; const balH=d.ingH-d.retH;
+    const col=balH<0?'var(--c-red)':balH>0?'var(--c-teal)':'var(--c-green)';
+    return `<tr><td><strong>${yr}</strong></td><td class="num-r">${fmtN(d.ingB)}</td><td class="num-r">${fmtN(d.retB)}</td><td class="num-r">${d.ingH.toFixed(1)}</td><td class="num-r">${d.retH.toFixed(1)}</td><td class="num-r" style="color:${col};font-weight:700;">${balH>=0?'+':''}${balH.toFixed(1)} HL</td></tr>`;
+  }).join('');
 }
 
 function buildMonthlyChep(yearVal) {
@@ -3199,6 +3423,35 @@ function renderSEMonthlyBalance() {
 // ============================================================
 //  MONTHLY NAC TABLE
 // ============================================================
+function renderNACDailyTable() {
+  const yearVal = document.getElementById('filter-year').value;
+  const monthVal = String(document.getElementById('filter-month').value).padStart(2,'0');
+  const moFilter = (currentPeriod==='month' && monthVal && monthVal!=='00') ? monthVal : null;
+  const tbody = document.getElementById('tbody-nac-daily');
+  if(!tbody) return;
+  const dias = nac_calcDiario(yearVal||String(new Date().getFullYear()), moFilter);
+  if(!dias.length){
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:14px;">Sin registros NAC en el período seleccionado.</td></tr>`;
+    return;
+  }
+  const TARGET_LBL = (NAC_TARGET_PCT*100).toFixed(3)+'%';
+  tbody.innerHTML = dias.map(d=>{
+    const pctStr = d.pct!==null ? (d.pct*100).toFixed(3)+'%' : '—';
+    const sobre = d.pct!==null && d.pct > NAC_TARGET_PCT;
+    const color = d.pct===null ? 'var(--muted)' : sobre ? 'var(--c-red)' : 'var(--c-green)';
+    const dot = d.pct===null ? '—' : sobre ? '🔴 Sobre' : '🟢 OK';
+    return `<tr>
+      <td style="font-family:var(--font-mono);font-size:11px;"><strong>${esc(d.fecha)}</strong></td>
+      <td class="num-r">${d.bultos.toFixed(2)}</td>
+      <td class="num-r" style="color:var(--c-ink-soft);">${d.bultos2776!==null?fmtN(d.bultos2776):'—'}</td>
+      <td class="num-r" style="color:${color};font-weight:${sobre?700:400};">${pctStr}</td>
+      <td class="num-r" style="opacity:.6;">${TARGET_LBL}</td>
+      <td><span style="color:${color};font-size:11px;font-weight:600;">${dot}</span></td>
+      <td class="num-r" style="color:var(--c-red);">${fmtARS(d.importe)}</td>
+    </tr>`;
+  }).join('');
+}
+
 function renderNACMonthlyTable() {
   const allRows = loadStore('nac').rows;
   const now = new Date();
@@ -3215,18 +3468,33 @@ function renderNACMonthlyTable() {
     monthMap[mo].importe += parseARS(r.cols[8]);
     if(r.cols[4]) monthMap[mo].facturas.add(r.cols[4]);
   });
+  // Calcular bultos 2776 por mes para el año en curso
+  Object.keys(monthMap).forEach(mo=>{
+    const b2776 = nac_totalBultos2776Mes(curYear, mo);
+    monthMap[mo].bultos2776 = b2776;
+    monthMap[mo].pct = b2776 ? monthMap[mo].bultos / b2776 : null;
+  });
   let accumImp = 0;
+  const TARGET_LBL = (NAC_TARGET_PCT*100).toFixed(3)+'%';
   const tbody = document.getElementById('tbody-nac-monthly');
   if(!tbody) return;
   tbody.innerHTML = MESES.map((mes,i)=>{
     const m = String(i+1).padStart(2,'0');
     const d = monthMap[m];
-    if(d.importe === 0 && d.bultos === 0) return `<tr style="opacity:.4"><td>${mes}</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td></tr>`;
+    if(d.importe === 0 && d.bultos === 0) return `<tr style="opacity:.4"><td>${mes}</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">${TARGET_LBL}</td><td>—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td></tr>`;
     accumImp += d.importe;
     const usd = usdRate > 0 ? (d.importe / usdRate) : 0;
+    const pctStr = d.pct!==null ? (d.pct*100).toFixed(3)+'%' : '—';
+    const sobre = d.pct!==null && d.pct > NAC_TARGET_PCT;
+    const color = d.pct===null ? 'var(--muted)' : sobre ? 'var(--c-red)' : 'var(--c-green)';
+    const dot = d.pct===null ? '—' : sobre ? '🔴' : '🟢';
     return `<tr>
       <td><strong>${mes}</strong></td>
       <td class="num-r">${d.bultos.toFixed(2)}</td>
+      <td class="num-r" style="color:var(--c-ink-soft);">${d.bultos2776!==null?fmtN(d.bultos2776):'—'}</td>
+      <td class="num-r" style="color:${color};font-weight:${sobre?700:400};">${pctStr}</td>
+      <td class="num-r" style="opacity:.6;">${TARGET_LBL}</td>
+      <td><span style="color:${color};font-weight:600;font-size:11px;">${dot}</span></td>
       <td class="num-r" style="color:var(--c-red);">${fmtARS(d.importe)}</td>
       <td class="num-r" style="color:var(--c-amber);">USD ${usd.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td>
       <td class="num-r">${fmtARS(accumImp)}</td>
@@ -4017,30 +4285,34 @@ const DPO_BLOCKS = [
     id:'B3', name:'Gestión de Activos', icon:'📦', color:'#8b5cf6', mandatory:true,
     questions:[
       {id:'R3.3', txt:'Gestión de activos: paletas CHEP / IFCO / retornables con trazabilidad actualizada', mandatory:true,
-        detail:`<strong>Guidance (qué se evalúa):</strong><br>
-El distribuidor debe contar con un proceso claro para volver a montar los pallets de activos tras descargar los camiones y enviarlos de vuelta a la cervecería de acuerdo con los estándares de seguridad. El proceso de clasificación consiste en separar los activos en buen estado de los activos rotos o con cualquier otro problema que impida su uso. La chatarra (scrap) son todos los activos que deben desecharse porque están rotos o presentan cualquier otro problema que impida su uso. Debe definirse claramente en qué puntos se van a verificar. El distribuidor debe disponer de una RACI para el proceso de Retorno de Ruta y el envío de envases vacíos a las fábricas de cerveza. El distribuidor debe realizar un seguimiento de la utilización y el cumplimiento del sistema en el proceso de Retorno de Ruta y carga de activos para la cervecería (TMS o similar). El distribuidor debe medir la inactividad de los activos para garantizar que los activos retornables se envíen a la fábrica de cerveza siempre que sea posible.
-<br><br><strong>Requirement (qué hace falta):</strong><br>
-R3.3.1 — Se define y actualiza el SOP, describiendo la recepción de activos del Retorno Ruta y SOP de proveedores externos, identificando los recibos si es necesario.<br>
-R3.3.2 — Los activos retornables se envían a la fábrica de cerveza siempre que sea posible para evitar activos ociosos. Se cumple el censo de envases y hay un seguimiento del DS de envases en sinergia con cervecería.<br>
-R3.3.3 — Se controlan los resultados de la clasificación %descartado y %clasificado a nivel individual (empleado).<br>
-R3.3.4 — Los objetivos y el desempeño del proceso de clasificación están disponibles para todos los empleados y ellos comprenden su impacto en los resultados.<br>
-R3.3.5 — Se definen y actualizan los procedimientos estándares para eliminar los residuos de acuerdo con los requisitos medioambientales.<br>
-R3.3.6 — Eliminación de la chatarra de acuerdo con el estándar.<br>
-R3.3.7 — Se definen acciones para resolver problemas y mejorar el cumplimiento del plan de activos retornables.
+        detail:`<strong>Guidance — Qué se evalúa:</strong><br>
+El distribuidor debe contar con un proceso claro para volver a montar los pallets de activos tras descargar los camiones y enviarlos de vuelta a la cervecería de acuerdo con los estándares de seguridad.<br>
+El proceso de clasificación consiste en separar los activos en buen estado de los activos rotos o con cualquier otro problema que impida su uso.<br>
+La chatarra (scrap) son todos los activos que deben desecharse porque están rotos o presentan cualquier otro problema que impida su uso. Debe definirse claramente en qué puntos se van a verificar.<br>
+El distribuidor debe disponer de una RACI para el proceso de Retorno de Ruta y el envío de envases vacíos a las fábricas de cerveza.<br>
+El distribuidor debe realizar un seguimiento de la utilización y el cumplimiento del sistema en el proceso de Retorno de Ruta y carga de activos para la cervecería (TMS o similar).<br>
+El distribuidor debe medir la inactividad de los activos para garantizar que los activos retornables se envíen a la fábrica de cerveza siempre que sea posible.
+<br><br><strong>Requisitos (qué hace falta cumplir):</strong><br>
+<strong>R3.3.1</strong> — Se define y actualiza el SOP, describiendo la recepción de activos del Retorno Ruta y SOP de proveedores externos, identificando los recibos si es necesario.<br>
+<strong>R3.3.2</strong> — Los activos retornables se envían a la fábrica de cerveza siempre que sea posible para evitar activos ociosos. Se cumple el censo de envases y hay un seguimiento del DS de envases en sinergia con cervecería.<br>
+<strong>R3.3.3</strong> — Se controlan los resultados de la clasificación %descartado y %clasificado a nivel individual (empleado).<br>
+<strong>R3.3.4</strong> — Los objetivos y el desempeño del proceso de clasificación están disponibles para todos los empleados y ellos comprenden su impacto en los resultados.<br>
+<strong>R3.3.5</strong> — Se definen y actualizan los procedimientos estándares para eliminar los residuos de acuerdo con los requisitos medioambientales.<br>
+<strong>R3.3.6</strong> — Eliminación de la chatarra de acuerdo con el estándar.<br>
+<strong>R3.3.7</strong> — Se definen acciones para resolver problemas y mejorar el cumplimiento del plan de activos retornables.
 <br><br><strong>Scoring:</strong><br>
-5 — Se cumplen todos los requisitos.<br>
-3 — Se cumplen R3.3.1 y R3.3.2, pero faltan una o dos de los demás requisitos.<br>
-1 — Se cumplen R3.3.1 y R3.3.2, pero faltan tres de los demás requisitos.<br>
-0 — No se cumplen R3.3.1 y/o R3.3.2, o faltan cuatro o más de los otros requisitos.
-<br><br><strong>How To Check (cómo se verifica):</strong><br>
-1. Comprobar si se ha definido y ejecutado un SOP en el que se describa la recepción de activos del Retorno de Ruta o de los proveedores externos, identificando los recibos en caso necesario.<br>
-2. Comprobar si los activos retornables se envían a la fábrica de cerveza siempre que sea posible para evitar activos ociosos, de conformidad con el plan de la fábrica de cerveza o de bebidas no alcohólicas. Comprobar si se cumple el censo de envases y si hay seguimiento de DS de envases en sinergia con cervecería.<br>
-3. Comprobar si se controlan los resultados de la clasificación (%Descarte y %Clasificado) a nivel individual (empleado). Comprobar si hay seguimiento de No Acreditables.<br>
-4. Comprobar si los objetivos y el rendimiento del proceso de clasificación están a disposición de todos los empleados y si comprenden su impacto en los resultados.<br>
-5. Comprobar si se ha definido y ejecutado un SOP para eliminar la chatarra de acuerdo con los requisitos medioambientales.<br>
-6. Comprobar si se han definido acciones para resolver problemas y mejorar el cumplimiento del plan de activos retornables (% Adherencia distribuidor vs Fábrica).
-<br><br><strong>Comentario del último check:</strong><br>
-Se debe trabajar en la zona de clasificación: seguridad (segregación h-m) y zona de residuos correspondiente.`
+<span style="color:#22c55e;font-weight:700;">5</span> — Se cumplen todos los requisitos.<br>
+<span style="color:#f59e0b;font-weight:700;">3</span> — Se cumplen R3.3.1 y R3.3.2, pero faltan una o dos de los demás requisitos.<br>
+<span style="color:#ef4444;font-weight:700;">1</span> — Se cumplen R3.3.1 y R3.3.2, pero faltan tres de los demás requisitos.<br>
+<span style="color:#94a3b8;font-weight:700;">0</span> — No se cumplen R3.3.1 y/o R3.3.2, o faltan cuatro o más de los otros requisitos.
+<br><br><strong>How To Check — Cómo se verifica en auditoría:</strong><br>
+<strong>1.</strong> Comprobar si se ha definido y ejecutado un SOP en el que se describa la recepción de activos del Retorno de Ruta o de los proveedores externos, identificando los recibos en caso necesario.<br>
+<strong>2.</strong> Comprobar si los activos retornables se envían a la fábrica de cerveza siempre que sea posible para evitar activos ociosos, de conformidad con el plan de la fábrica de cerveza o de bebidas no alcohólicas. Comprobar si se cumple el censo de envases y si hay seguimiento de DS de envases en sinergia con cervecería.<br>
+<strong>3.</strong> Comprobar si se controlan los resultados de la clasificación (%Descarte y %Clasificado) a nivel individual (empleado). Comprobar si hay seguimiento de No Acreditables.<br>
+<strong>4.</strong> Comprobar si los objetivos y el rendimiento del proceso de clasificación están a disposición de todos los empleados y si comprenden su impacto en los resultados.<br>
+<strong>5.</strong> Comprobar si se ha definido y ejecutado un SOP para eliminar la chatarra de acuerdo con los requisitos medioambientales.<br>
+<strong>6.</strong> Comprobar si se han definido acciones para resolver problemas y mejorar el cumplimiento del plan de activos retornables (% Adherencia distribuidor vs Fábrica).
+<br><br><div style="background:rgba(200,164,53,.12);border:1px solid rgba(200,164,53,.35);border-radius:6px;padding:8px 12px;font-size:11px;"><strong>⚠ Foco H1 2026 — Comentario de auditoría anterior:</strong><br>Se debe trabajar en la zona de clasificación: seguridad (segregación hombres-mujeres) y zona de residuos correspondiente.</div>`
       }
     ]
   }
@@ -5518,18 +5790,25 @@ function dc_renderTablas(){
     const map = dc_calcResumen();
     const filas = [];
     Object.values(map).forEach(m=>{
+      // Calcular deuda total del cliente (suma de todos los activos)
+      let deudaClienteTotal = 0;
       DC_ACTIVOS.forEach(a=>{
         const d = m.porActivo[a]||{prest:0,dev:0};
         const saldo = d.prest - d.dev;
-        if(saldo>0) filas.push({ codCliente:m.codCliente, cliente:m.cliente, activo:a, saldo, monto: saldo*(dc_S.precios[a]||0), fecha:m.ultimaFecha });
+        if(saldo > 0) deudaClienteTotal += saldo * (dc_S.precios[a]||0);
+      });
+      DC_ACTIVOS.forEach(a=>{
+        const d = m.porActivo[a]||{prest:0,dev:0};
+        const saldo = d.prest - d.dev;
+        if(saldo>0) filas.push({ codCliente:m.codCliente, cliente:m.cliente, activo:a, saldo, monto: saldo*(dc_S.precios[a]||0), fecha:m.ultimaFecha, deudaClienteTotal });
       });
     });
-    filas.sort((a,b)=> b.monto-a.monto);
+    filas.sort((a,b)=> b.deudaClienteTotal-a.deudaClienteTotal || b.monto-a.monto);
     if(!filas.length){
       deudoresWrap.innerHTML = '<div style="color:var(--c-ink-soft);text-align:center;padding:16px">Sin clientes con deuda pendiente. ✅</div>';
     } else {
-      deudoresWrap.innerHTML = `<table class="a-tbl"><thead><tr><th>Fecha</th><th>Cód</th><th style="text-align:left;">Cliente</th><th>Activo</th><th class="num-r">Saldo (unid.)</th><th class="num-r">Monto $</th></tr></thead><tbody>
-      ${filas.map(f=>`<tr><td style="font-family:var(--font-mono);font-size:11px;">${esc(f.fecha||'—')}</td><td><code style="color:var(--accent)">${esc(f.codCliente)}</code></td><td style="text-align:left;">${esc(f.cliente)}</td><td>${DC_ACTIVO_LABEL[f.activo]}</td><td class="num-r" style="font-weight:700;color:var(--c-red);">${fmtN(f.saldo)}</td><td class="num-r" style="font-weight:700;color:var(--c-red);">${fmtN(f.monto)}</td></tr>`).join('')}
+      deudoresWrap.innerHTML = `<table class="a-tbl"><thead><tr><th>Fecha</th><th>Cód</th><th style="text-align:left;">Cliente</th><th>Activo</th><th class="num-r">Saldo (unid.)</th><th class="num-r">Monto $</th><th class="num-r">Deuda total cliente $</th></tr></thead><tbody>
+      ${filas.map(f=>`<tr><td style="font-family:var(--font-mono);font-size:11px;">${esc(f.fecha||'—')}</td><td><code style="color:var(--accent)">${esc(f.codCliente)}</code></td><td style="text-align:left;">${esc(f.cliente)}</td><td>${DC_ACTIVO_LABEL[f.activo]}</td><td class="num-r" style="font-weight:700;color:var(--c-red);">${fmtN(f.saldo)}</td><td class="num-r" style="font-weight:700;color:var(--c-red);">${fmtN(f.monto)}</td><td class="num-r" style="font-weight:700;color:var(--c-navy);">${fmtN(f.deudaClienteTotal)}</td></tr>`).join('')}
       </tbody></table>`;
     }
   }
@@ -5592,29 +5871,37 @@ function dc_exportarPDF(){
   const totalDeuda = deudores.reduce((s,m)=>s+m.monto,0);
   const totalFavor = favores.reduce((s,m)=>s+m.monto,0);
   const fechaGen = new Date().toLocaleDateString('es-AR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  // Desglose por activo: un cliente puede figurar en más de una fila si debe más de un tipo de activo.
+  // Desglose por activo, con columna deuda total del cliente
   const filasDetalle = [];
   entries.forEach(m=>{
+    const montoTotalCliente = DC_ACTIVOS.reduce((s,a)=>{
+      const d = m.porActivo[a]||{prest:0,dev:0};
+      const sal = d.prest-d.dev;
+      return s + (sal>0 ? sal*(dc_S.precios[a]||0) : 0);
+    },0);
     DC_ACTIVOS.forEach(a=>{
       const d = m.porActivo[a]||{prest:0,dev:0};
       const saldo = d.prest - d.dev;
       if(saldo===0) return;
-      filasDetalle.push({ codCliente:m.codCliente, cliente:m.cliente, activo:a, prest:d.prest, dev:d.dev, saldo, monto: saldo*(dc_S.precios[a]||0), fecha:m.ultimaFecha });
+      filasDetalle.push({ codCliente:m.codCliente, cliente:m.cliente, activo:a, prest:d.prest, dev:d.dev, saldo, monto: saldo*(dc_S.precios[a]||0), fecha:m.ultimaFecha, montoTotalCliente });
     });
   });
-  filasDetalle.sort((a,b)=> b.monto-a.monto);
-  const filas = filasDetalle.map(f=>`<tr><td style="font-family:monospace;font-size:10px;">${esc(f.fecha||'—')}</td><td>${esc(f.codCliente)}</td><td style="text-align:left;">${esc(f.cliente)}</td><td>${DC_ACTIVO_LABEL[f.activo]}</td><td style="text-align:right;">${fmtN(f.prest)}</td><td style="text-align:right;">${fmtN(f.dev)}</td><td style="text-align:right;font-weight:700;color:${f.saldo>0?'#B52B2B':'#2E7D52'};">${f.saldo>=0?'+':''}${fmtN(f.saldo)}</td><td style="text-align:right;font-weight:700;color:${f.monto>0?'#B52B2B':'#2E7D52'};">${f.monto>=0?'+':''}${fmtN(f.monto)}</td><td>${f.saldo>0?'DEBE':'A FAVOR'}</td></tr>`).join('');
+  filasDetalle.sort((a,b)=> b.montoTotalCliente-a.montoTotalCliente || b.monto-a.monto);
+  const filas = filasDetalle.map(f=>`<tr><td style="font-family:monospace;font-size:10px;">${esc(f.fecha||'—')}</td><td>${esc(f.codCliente)}</td><td style="text-align:left;">${esc(f.cliente)}</td><td>${DC_ACTIVO_LABEL[f.activo]}</td><td style="text-align:right;">${fmtN(f.prest)}</td><td style="text-align:right;">${fmtN(f.dev)}</td><td style="text-align:right;font-weight:700;color:${f.saldo>0?'#B52B2B':'#2E7D52'};">${f.saldo>=0?'+':''}${fmtN(f.saldo)}</td><td style="text-align:right;font-weight:700;color:${f.monto>0?'#B52B2B':'#2E7D52'};">${f.monto>=0?'+':''}${fmtN(f.monto)}</td><td style="text-align:right;font-weight:700;color:#0D2340;">${fmtN(f.montoTotalCliente)}</td><td>${f.saldo>0?'DEBE':'A FAVOR'}</td></tr>`).join('');
   const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Informe Status Deuda de Clientes</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Source Sans 3',sans-serif;background:#fff;padding:10mm;color:#222;}
-@media print{body{padding:0;}@page{size:A4;margin:10mm;}button{display:none!important;}}
-table{border-collapse:collapse;width:100%;font-size:11px;}
-th{background:#0D2340;color:#fff;font-family:Oswald,sans-serif;text-transform:uppercase;font-size:9px;letter-spacing:.03em;padding:5px 6px;}
-td{padding:4px 6px;border-bottom:1px solid #eee;}
+@media print{body{padding:0;}@page{size:A4 portrait;margin:10mm;}button{display:none!important;}.no-print{display:none!important;}}
+table{border-collapse:collapse;width:100%;font-size:10px;}
+th{background:#0D2340;color:#fff;font-family:Oswald,sans-serif;text-transform:uppercase;font-size:8.5px;letter-spacing:.03em;padding:5px 6px;text-align:left;}
+th.nr{text-align:right;}
+td{padding:4px 6px;border-bottom:1px solid #eee;vertical-align:middle;}
+td.nr{text-align:right;}
 tr:nth-child(even) td{background:#F7F5EF;}
 .no-print{margin-bottom:12px;}
+.page-break{page-break-before:always;}
 </style></head><body>
 <div class="no-print"><button onclick="window.print()" style="background:#0D2340;color:#fff;font-family:Oswald,sans-serif;font-size:13px;text-transform:uppercase;padding:8px 18px;border:none;border-radius:5px;cursor:pointer;letter-spacing:.04em;">🖨 Imprimir / Guardar como PDF</button></div>
 <div style="border-bottom:3px solid #0D2340;padding-bottom:8px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:flex-end;">
@@ -5630,7 +5917,7 @@ tr:nth-child(even) td{background:#F7F5EF;}
   <div style="border:1px solid #ccc;border-radius:6px;padding:8px;text-align:center;border-top:3px solid #2E7D52;"><div style="font-family:monospace;font-size:18px;font-weight:700;color:#0D2340;">+${fmtN(totalFavor)}</div><div style="font-size:9px;text-transform:uppercase;color:#4A5E72;">A favor total · ${favores.length} cliente${favores.length!==1?'s':''}</div></div>
   <div style="border:1px solid #ccc;border-radius:6px;padding:8px;text-align:center;border-top:3px solid #0D2340;"><div style="font-family:monospace;font-size:18px;font-weight:700;color:#0D2340;">${fmtN(totalDeuda+totalFavor)}</div><div style="font-size:9px;text-transform:uppercase;color:#4A5E72;">Balance neto</div></div>
 </div>
-<table><thead><tr><th>Fecha</th><th>Cód</th><th style="text-align:left;">Cliente</th><th>Activo</th><th>Préstamos</th><th>Devoluciones</th><th>Saldo unid.</th><th>Monto $</th><th>Estado</th></tr></thead><tbody>${filas||'<tr><td colspan="9" style="text-align:center;padding:14px;">Sin clientes con saldo pendiente.</td></tr>'}</tbody></table>
+<table><thead><tr><th>Fecha</th><th>Cód</th><th style="text-align:left;">Cliente</th><th>Activo</th><th class="nr">Préstamos</th><th class="nr">Devol.</th><th class="nr">Saldo</th><th class="nr">Monto $</th><th class="nr">Deuda total $</th><th>Estado</th></tr></thead><tbody>${filas||'<tr><td colspan="10" style="text-align:center;padding:14px;">Sin clientes con saldo pendiente.</td></tr>'}</tbody></table>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px;">
   <div style="border:1px solid #ccc;border-radius:6px;padding:10px;text-align:center;min-height:55px;display:flex;flex-direction:column;justify-content:flex-end;">
     <div style="font-size:10px;color:#888;">___________________________</div>
