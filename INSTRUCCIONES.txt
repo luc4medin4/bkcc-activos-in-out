@@ -1,0 +1,44 @@
+BKCC ACTIVOS IN-OUT — Subir a GitHub
+=====================================
+
+Este repo ya tiene el primer commit hecho (.git incluido). Solo te falta
+conectarlo con GitHub y subirlo.
+
+PASO 1 — Crear el repo vacío en GitHub
+---------------------------------------
+1. Entrá a https://github.com/new
+2. Repository name: bkcc-activos-in-out
+3. NO tildes "Add a README file" ni ".gitignore" (ya los tenemos)
+4. Create repository
+
+PASO 2 — Conectar y subir
+---------------------------------------
+Abrí una terminal, entrá a esta carpeta descomprimida y corré:
+
+    cd bkcc-activos-in-out
+    git remote add origin https://github.com/luc4medin4/bkcc-activos-in-out.git
+    git push -u origin main
+
+Si te pide usuario/contraseña: GitHub ya no acepta contraseña normal.
+Usá un Personal Access Token (Settings → Developer settings → 
+Personal access tokens → Tokens (classic) → Generate new token, 
+permiso "repo") como contraseña, o conectá GitHub Desktop / la 
+extensión de GitHub en VS Code para que lo haga por vos sin tokens.
+
+PASO 3 — Publicarlo con GitHub Pages (URL pública)
+---------------------------------------
+1. En el repo en GitHub: Settings → Pages
+2. Branch: main / carpeta: / (root) → Save
+3. Esperá 1-2 minutos. Tu app va a quedar en:
+
+   https://luc4medin4.github.io/bkcc-activos-in-out/BKCC_Activos_IN-OUT_v8.html
+
+PASO 4 — Subir nuevas versiones más adelante
+---------------------------------------
+Cada vez que tengas una v9, v10, etc.:
+
+    git add .
+    git commit -m "v9: descripción del cambio"
+    git push
+
+Listo. Cualquier error que tire la terminal, pegámelo y lo resolvemos.
