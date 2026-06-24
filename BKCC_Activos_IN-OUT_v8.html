@@ -176,10 +176,11 @@
   #toast.error { background: var(--danger); color: #fff; }
 
   /* ===== ANALYSIS PAGE ===== */
-  .analysis-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
-  .analysis-header h1 { font-size: 20px; font-weight: 700; }
-  .period-selector { display: flex; gap: 8px; align-items: center; margin-left: auto; flex-wrap: wrap; }
-  .period-selector label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .analysis-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .analysis-header h1 { font-size: 17px; font-weight: 700; }
+  .period-selector { display: flex; gap: 6px; align-items: center; margin-left: auto; flex-wrap: wrap; }
+  .period-selector label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .period-selector select { max-width: 110px; }
   .period-btn { padding: 6px 14px; border-radius: 5px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; }
   .period-btn.active { background: var(--accent2); color: #000; border-color: var(--accent2); }
   .period-inputs { display: flex; gap: 8px; align-items: center; }
@@ -209,6 +210,15 @@
   .bar:hover::after { content: attr(data-tip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #000; color: #fff; font-size: 10px; padding: 3px 7px; border-radius: 4px; white-space: nowrap; pointer-events: none; z-index: 10; margin-bottom: 4px; }
   .bar-label { font-size: 9px; color: var(--muted); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
   .bar-val { font-size: 8px; color: var(--muted); text-align: center; margin-top: 1px; }
+  /* Gráfico divergente: positivos arriba (azul/teal), negativos abajo (rojo) */
+  .bar-chart-div { display: flex; align-items: stretch; gap: 4px; height: 100%; }
+  .bar-group-div { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 0; }
+  .bar-half-pos { display: flex; align-items: flex-end; justify-content: center; width: 100%; height: 64px; }
+  .bar-half-neg { display: flex; align-items: flex-start; justify-content: center; width: 100%; height: 64px; }
+  .bar-zero-line { width: 100%; height: 1px; background: var(--border); flex-shrink: 0; }
+  .bar-up { border-radius: 3px 3px 0 0; min-height: 2px; width: 70%; position: relative; }
+  .bar-down { border-radius: 0 0 3px 3px; min-height: 2px; width: 70%; position: relative; }
+  .bar-up:hover::after, .bar-down:hover::after { content: attr(data-tip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #000; color: #fff; font-size: 10px; padding: 3px 7px; border-radius: 4px; white-space: nowrap; pointer-events: none; z-index: 10; margin-bottom: 4px; }
 
   /* Section blocks */
   .section-block { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
@@ -237,7 +247,7 @@
   .num-r { text-align: right; font-variant-numeric: tabular-nums; }
 
   /* DOWNLOAD STRIP */
-  .download-strip { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .download-strip { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .download-strip .strip-label { font-size: 13px; color: var(--muted); flex: 1; }
   .download-strip .strip-label strong { color: var(--text); }
 
@@ -255,6 +265,12 @@
   .an-section { display: none; }
   .an-section.active { display: block; }
   .an-balance-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 12px; margin-bottom: 18px; }
+  /* Tarjetas KPI "mini": para números de contexto bajo (remitos, totales brutos) que no merecen tanto protagonismo visual */
+  .stats-grid-mini { gap: 8px; margin-bottom: 14px; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .stats-grid-mini .stat-card { padding: 8px 10px; }
+  .stats-grid-mini .stat-card .stat-label { font-size: 9px; margin-bottom: 2px; }
+  .stats-grid-mini .stat-card .stat-value { font-size: 15px; }
+  .stats-grid-mini .stat-card .stat-sub { font-size: 9px; margin-top: 1px; }
   @media(max-width: 760px) {
     .an-layout { flex-direction: column; }
     .an-nav { width: 100%; flex-direction: row; overflow-x: auto; position: static; }
@@ -435,6 +451,19 @@
     color:var(--c-gold);padding:2px 6px;border-radius:3px;font-family:'IBM Plex Mono',monospace;}
   .dpo-modal-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000;
     align-items:center;justify-content:center;padding:20px;}
+  .dpo-modal-box.dpo-modal-wide{max-width:920px;}
+  .dpo-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:760px){.dpo-detail-grid{grid-template-columns:1fr;}}
+  .dpo-detail-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+  .dpo-detail-card.full{grid-column:1 / -1;}
+  .dpo-detail-card h4{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--c-gold);margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:6px;}
+  .dpo-detail-card ul{margin:0;padding-left:18px;}
+  .dpo-detail-card li{margin-bottom:9px;line-height:1.55;font-size:12.5px;color:var(--text);}
+  .dpo-detail-card li:last-child{margin-bottom:0;}
+  .dpo-detail-card li strong{color:var(--c-navy-light);}
+  .dpo-score-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:9px;line-height:1.5;font-size:12.5px;}
+  .dpo-score-row:last-child{margin-bottom:0;}
+  .dpo-score-num{flex-shrink:0;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff;}
   .dpo-modal-box{background:var(--surface);border-radius:14px;max-width:560px;width:100%;
     box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden;}
   .dpo-modal-hdr{background:linear-gradient(135deg,var(--c-navy),#1a3f78);padding:20px 24px;
@@ -896,9 +925,9 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
             <span style="font-size:14px;flex-shrink:0;">ℹ️</span>
             <span><strong style="color:var(--text);">Aclaración de términos:</strong> acá llamamos <strong style="color:var(--c-red);">"Salidas"</strong> a los activos que <strong>Quilmes planta nos envía</strong> a nosotros, y <strong style="color:var(--c-teal);">"Entradas"</strong> a los activos que <strong>nosotros le devolvemos</strong> en cada camión de acarreo. Es la inversión que usa la boleta oficial de planta — no es un error, se mantiene así a propósito para evitar confusiones contra el remito.</span>
           </div>
-          <div class="stats-grid" id="se-stats"></div>
+          <div class="stats-grid stats-grid-mini" id="se-stats"></div>
 
-          <div class="an-balance-strip" id="se-balance-anual"></div>
+          <div class="an-balance-strip stats-grid-mini" id="se-balance-anual"></div>
 
           <div class="analysis-table-card">
             <h3 id="se-trend-title">Tendencia — A Liquidar</h3>
@@ -906,7 +935,7 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
           </div>
 
           <div class="analysis-table-card">
-            <h3 id="se-monthly-title">Balance Mensual — Año en curso <span style="font-size:10px;font-weight:400;color:var(--muted)">(Objetivo: DIF mes = 0 · DIF año → 0)</span></h3>
+            <h3 id="se-monthly-title" style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>Balance Mensual — Año en curso <span style="font-size:10px;font-weight:400;color:var(--muted)">(Objetivo: DIF mes = 0 · DIF año → 0)</span></span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-se-monthly','SE_Balance_Mensual')">⬇ Excel</button></h3>
             <div class="table-wrap"><table class="a-tbl" id="tbl-se-monthly">
               <thead><tr><th>Mes</th><th class="num-r">Salidas</th><th class="num-r">Entradas</th><th class="num-r">DIF mes</th><th class="num-r">DIF año</th><th class="num-r">CHEP Sal.</th><th class="num-r">CHEP Ent.</th><th class="num-r">CHEP DIF</th><th>Estado</th></tr></thead>
               <tbody id="tbody-se-monthly"></tbody>
@@ -914,8 +943,14 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
           </div>
 
           <div class="analysis-table-card" id="se-narrativa-card">
-            <h3>📝 Narrativa — qué pasó con cada remito</h3>
-            <div id="se-narrativa-list" style="font-size:12px;line-height:1.7;"></div>
+            <h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+              <span>📝 Narrativa — qué pasó con cada remito</span>
+              <button class="btn btn-ghost btn-sm" onclick="printNarrativaPDF('se')">🖨️ PDF Narrativa</button>
+            </h3>
+            <details id="se-narrativa-details" open>
+              <summary style="cursor:pointer;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;">Mostrar / ocultar narrativa</summary>
+              <div id="se-narrativa-list" style="font-size:12px;line-height:1.7;"></div>
+            </details>
           </div>
 
           <div class="analysis-table-card" id="se-deuda-sintesis-card">
@@ -924,7 +959,7 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
           </div>
 
           <div class="analysis-table-card" id="se-deuda-mensual-card">
-            <h3 id="se-deuda-mensual-title">📋 Deuda por Activo — mes por mes (acumulado a fin de cada mes)</h3>
+            <h3 id="se-deuda-mensual-title" style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>📋 Deuda por Activo — mes por mes (acumulado a fin de cada mes)</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-se-deuda-mensual','SE_Deuda_Mensual_Por_Activo')">⬇ Excel</button></h3>
             <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Cuánto quedamos debiendo (o a favor) a la planta por cada activo, al cierre de cada mes del año seleccionado. Negativo = deuda, positivo = a favor.</div>
             <div class="table-wrap"><table class="a-tbl" id="tbl-se-deuda-mensual">
               <thead id="thead-se-deuda-mensual"><tr><th>Mes</th></tr></thead>
@@ -933,14 +968,14 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
           </div>
 
           <div class="analysis-table-card">
-            <h3>Por Producto — período seleccionado</h3>
+            <h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>Por Producto — período seleccionado</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-se-prod','SE_Por_Producto')">⬇ Excel</button></h3>
             <div class="table-wrap"><table class="a-tbl" id="tbl-se-prod">
               <thead><tr><th>Cód</th><th>Descripción</th><th class="num-r">Salidas</th><th class="num-r">Entradas</th><th class="num-r">A Liquidar</th><th>Balance</th></tr></thead>
               <tbody id="tbody-se-prod"></tbody>
             </table></div>
           </div>
           <div class="analysis-table-card">
-            <h3>Por Chofer — período seleccionado</h3>
+            <h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>Por Chofer — período seleccionado</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-se-chofer','SE_Por_Chofer')">⬇ Excel</button></h3>
             <div class="table-wrap"><table class="a-tbl" id="tbl-se-chofer">
               <thead><tr><th>Chofer</th><th class="num-r">Remitos</th><th class="num-r">Salidas</th><th class="num-r">Entradas</th><th class="num-r">A Liquidar</th></tr></thead>
               <tbody id="tbody-se-chofer"></tbody>
@@ -966,7 +1001,7 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
           </div>
 
           <div class="analysis-table-card">
-            <h3 id="nac-daily-title">📅 Seguimiento Diario NAC — por mes (click en el mes para expandir/colapsar el detalle día por día) <span style="font-size:10px;font-weight:400;color:var(--muted)">(% = Bultos NAC ÷ Bultos 2776 Araceli del mismo día)</span></h3>
+            <h3 id="nac-daily-title" style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;"><span>📅 Seguimiento Diario NAC — por mes (click en el mes para expandir/colapsar el detalle día por día) <span style="font-size:10px;font-weight:400;color:var(--muted)">(% = Bultos NAC ÷ Bultos 2776 Araceli del mismo día)</span></span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-nac-daily','NAC_Seguimiento_Diario')">⬇ Excel</button></h3>
             <div class="table-wrap"><table class="a-tbl" id="tbl-nac-daily">
               <thead><tr><th>Fecha / Mes</th><th class="num-r">Bultos NAC</th><th class="num-r">Bultos 2776</th><th class="num-r">% NAC</th><th class="num-r">Target</th><th>Estado</th><th class="num-r">Importe ARS</th></tr></thead>
               <tbody id="tbody-nac-daily"></tbody>
@@ -974,16 +1009,16 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
           </div>
 
           <div class="analysis-table-card">
-            <h3>📊 Resumen Anual NAC — comparativo por año</h3>
+            <h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>📊 Resumen Anual NAC — comparativo por año</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-nac-anual-resumen','NAC_Resumen_Anual')">⬇ Excel</button></h3>
             <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">2023 excluido a pedido; 2022 sin datos (no se trackeaba NAC todavía).</div>
-            <div class="table-wrap"><table class="a-tbl">
+            <div class="table-wrap"><table class="a-tbl" id="tbl-nac-anual-resumen">
               <thead><tr><th>Año</th><th class="num-r">Bultos NAC (total)</th><th class="num-r">Importe ARS (total)</th><th class="num-r">% NAC Promedio</th><th>vs Target</th></tr></thead>
               <tbody id="tbody-nac-anual-resumen"></tbody>
             </table></div>
           </div>
 
           <div class="analysis-table-card">
-            <h3 id="nac-monthly-title">📆 Análisis Mensual NAC — Año en curso <span style="font-size:10px;font-weight:400;color:var(--muted)">(USD Oficial ref: ~$1.460)</span></h3>
+            <h3 id="nac-monthly-title" style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>📆 Análisis Mensual NAC — Año en curso <span style="font-size:10px;font-weight:400;color:var(--muted)">(USD Oficial ref: ~$1.460)</span></span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-nac-monthly','NAC_Analisis_Mensual')">⬇ Excel</button></h3>
             <div class="table-wrap"><table class="a-tbl" id="tbl-nac-monthly">
               <thead><tr><th>Mes</th><th class="num-r">Bultos NAC</th><th class="num-r">Bultos 2776</th><th class="num-r">% NAC</th><th class="num-r">Target</th><th>Estado</th><th class="num-r">Importe ARS</th><th class="num-r" id="nac-usd-col-hdr">USD Eq.</th><th class="num-r">Acum. ARS</th><th class="num-r">Facturas</th></tr></thead>
               <tbody id="tbody-nac-monthly"></tbody>
@@ -997,7 +1032,7 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
 
           <!-- COMPARATIVO HISTÓRICO % NAC vs TARGET — promedio anual -->
           <div class="analysis-table-card">
-            <h3 id="nac-comp-title">📊 Comparativo Histórico — % NAC vs Target (<span id="nac-comp-target-lbl">0,250%</span>)</h3>
+            <h3 id="nac-comp-title" style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>📊 Comparativo Histórico — % NAC vs Target (<span id="nac-comp-target-lbl">0,250%</span>)</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-nac-comparativo','NAC_Comparativo_Historico')">⬇ Excel</button></h3>
             <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">
               El % NAC = Bultos NAC ÷ Bultos Araceli (cód 2776) ingresados ese período. La clave es el denominador: cuántos bultos del cód 2776 BOT ARACELI ingresaron ese día/mes según los Retiros. Target: 0,250%. Si no hay retiros del 2776 cargados para ese período, el % aparece como "—".
             </div>
@@ -1009,7 +1044,7 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
 
           <!-- CRUZADA MENSUAL % NAC POR AÑO -->
           <div class="analysis-table-card">
-            <h3 id="nac-cruzada-title">📅 Cruzada Mensual — % NAC por Año (rojo = sobre target <span id="nac-cruzada-target-lbl">0,250%</span>)</h3>
+            <h3 id="nac-cruzada-title" style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>📅 Cruzada Mensual — % NAC por Año (rojo = sobre target <span id="nac-cruzada-target-lbl">0,250%</span>)</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-nac-cruzada','NAC_Cruzada_Mensual')">⬇ Excel</button></h3>
             <div style="font-size:11px;color:var(--muted);margin-bottom:8px;" id="nac-cruzada-nota"></div>
             <div class="table-wrap"><table class="a-tbl" id="tbl-nac-cruzada">
               <thead id="thead-nac-cruzada"><tr><th>Mes</th></tr></thead>
@@ -1019,30 +1054,36 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
 
           <!-- ALERTA — viajes con NAC alto vs bultos de ingreso -->
           <div class="analysis-table-card" id="nac-alertas-card">
-            <h3 id="nac-alertas-title">🚨 Alerta — Viajes/Remitos con NAC elevado (% sobre bultos de ingreso)</h3>
+            <h3 id="nac-alertas-title" style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;"><span>🚨 Alerta — Viajes/Remitos con NAC elevado (% sobre bultos de ingreso) — click en el mes para expandir</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-nac-alertas','NAC_Alertas')">⬇ Excel</button></h3>
             <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">
-              Cruza cada remito/factura NAC contra el total de bultos despachados ese mismo mes. Marca en rojo los remitos cuyo % individual supera 3× el target (0,750%) — señal de revisar el viaje puntual, más allá del promedio mensual.
+              Cruza cada remito/factura NAC contra el total de bultos despachados ese mismo mes. <span style="color:var(--c-red);font-weight:700;">🔴 Crítico</span> = más de 6× el target o importe ≥ $1.500.000. <span style="color:var(--warn);font-weight:700;">🟠 Atención</span> = supera 3× el target o importe ≥ $500.000.
             </div>
             <div class="table-wrap"><table class="a-tbl" id="tbl-nac-alertas">
-              <thead><tr><th>Fecha</th><th>Planta</th><th>Factura</th><th>Descripción</th><th class="num-r">Bultos NAC</th><th class="num-r">Importe</th><th class="num-r">% sobre bultos mes</th></tr></thead>
+              <thead><tr><th>Fecha / Mes</th><th>Severidad</th><th>Planta</th><th>Factura</th><th>Descripción</th><th class="num-r">Bultos NAC</th><th class="num-r">Importe</th><th class="num-r">% sobre bultos mes</th></tr></thead>
               <tbody id="tbody-nac-alertas"></tbody>
             </table></div>
           </div>
 
           <div class="analysis-table-card" id="nac-narrativa-card">
-            <h3>📝 Narrativa — qué pasó con cada NAC del período</h3>
-            <div id="nac-narrativa-list" style="font-size:12px;line-height:1.7;"></div>
+            <h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+              <span>📝 Narrativa — qué pasó con cada NAC del período</span>
+              <button class="btn btn-ghost btn-sm" onclick="printNarrativaPDF('nac')">🖨️ PDF Narrativa</button>
+            </h3>
+            <details id="nac-narrativa-details" open>
+              <summary style="cursor:pointer;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;">Mostrar / ocultar narrativa</summary>
+              <div id="nac-narrativa-list" style="font-size:12px;line-height:1.7;"></div>
+            </details>
           </div>
 
           <div class="analysis-table-card">
-            <h3>Por Planta</h3>
+            <h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>Por Planta</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-nac-planta','NAC_Por_Planta')">⬇ Excel</button></h3>
             <div class="table-wrap"><table class="a-tbl" id="tbl-nac-planta">
               <thead><tr><th>Planta</th><th class="num-r">Bultos</th><th class="num-r">Importe Neto</th><th class="num-r">Facturas</th><th class="num-r">% del total</th></tr></thead>
               <tbody id="tbody-nac-planta"></tbody>
             </table></div>
           </div>
           <div class="analysis-table-card">
-            <h3>Por Producto</h3>
+            <h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>Por Producto</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-nac-prod','NAC_Por_Producto')">⬇ Excel</button></h3>
             <div class="table-wrap"><table class="a-tbl" id="tbl-nac-prod">
               <thead><tr><th>Cód</th><th>Descripción</th><th class="num-r">Bultos</th><th class="num-r">Importe</th><th class="num-r">Filas</th></tr></thead>
               <tbody id="tbody-nac-prod"></tbody>
@@ -1060,29 +1101,29 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
         <div class="section-block-body" style="background:var(--surface);border-radius:0 0 10px 10px;border:1px solid var(--border);border-top:none;">
           <div class="stats-grid" id="chep-export-stats"></div>
           <div class="analysis-table-card">
-            <h3>Por Calibre/Tipo</h3>
+            <h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>Por Calibre/Tipo</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-chep-calibre','CHEP_Por_Calibre')">⬇ Excel</button></h3>
             <div class="table-wrap"><table class="a-tbl" id="tbl-chep-calibre">
               <thead><tr><th>Calibre</th><th class="num-r">Ingresos</th><th class="num-r">Retiros</th><th class="num-r">Balance</th><th>Estado</th></tr></thead>
               <tbody id="tbody-chep-calibre"></tbody>
             </table></div>
           </div>
           <div class="analysis-table-card">
-            <h3>Por Centro</h3>
+            <h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>Por Centro</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-chep-centro','CHEP_Por_Centro')">⬇ Excel</button></h3>
             <div class="table-wrap"><table class="a-tbl" id="tbl-chep-centro">
               <thead><tr><th>Centro</th><th class="num-r">Ingresos</th><th class="num-r">Retiros</th><th class="num-r">Balance</th></tr></thead>
               <tbody id="tbody-chep-centro"></tbody>
             </table></div>
           </div>
           <div class="analysis-table-card">
-            <h3>📆 Balance Mensual CHEP — Año seleccionado</h3>
-            <div class="table-wrap"><table class="a-tbl">
+            <h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>📆 Balance Mensual CHEP — Año seleccionado</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-chep-export-monthly','CHEP_Balance_Mensual')">⬇ Excel</button></h3>
+            <div class="table-wrap"><table class="a-tbl" id="tbl-chep-export-monthly">
               <thead><tr><th>Mes</th><th class="num-r">Ingresos</th><th class="num-r">Retiros</th><th class="num-r">Balance mes</th><th class="num-r">Acumulado</th><th>Estado</th></tr></thead>
               <tbody id="tbody-chep-monthly"></tbody>
             </table></div>
           </div>
           <div class="analysis-table-card">
-            <h3>📅 Balance Anual CHEP — comparativo por año</h3>
-            <div class="table-wrap"><table class="a-tbl">
+            <h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>📅 Balance Anual CHEP — comparativo por año</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-chep-anual','CHEP_Balance_Anual')">⬇ Excel</button></h3>
+            <div class="table-wrap"><table class="a-tbl" id="tbl-chep-anual">
               <thead><tr><th>Año</th><th class="num-r">Ingresos</th><th class="num-r">Retiros</th><th class="num-r">Balance</th><th>Estado</th></tr></thead>
               <tbody id="tbody-chep-anual"></tbody>
             </table></div>
@@ -1098,23 +1139,30 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
         </div>
         <div class="section-block-body" style="background:var(--surface);border-radius:0 0 10px 10px;border:1px solid var(--border);border-top:none;">
           <div class="stats-grid" id="activos-export-stats"></div>
+
+          <div class="analysis-table-card" id="activos-cierre-card" style="border-left:4px solid var(--c-gold);">
+            <h3>📌 Cierre del Mes — ¿Cómo cerramos con Planta? (Deuda / a Favor, por Tipo de Activo)</h3>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Balance acumulado a la fecha de cierre más reciente con datos. <span style="color:var(--c-red);font-weight:700;">Rojo</span> = le debemos HL a planta (ingresamos de menos). <span style="color:var(--c-teal);font-weight:700;">Verde/Teal</span> = estamos a favor (ingresamos de más).</div>
+            <div class="stats-grid" id="activos-cierre-stats"></div>
+          </div>
+
           <div class="analysis-table-card">
-            <h3>Por Calibre</h3>
+            <h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>Por Calibre</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-activos-calibre','Activos_Por_Calibre')">⬇ Excel</button></h3>
             <div class="table-wrap"><table class="a-tbl" id="tbl-activos-calibre">
               <thead><tr><th>Calibre</th><th class="num-r">Ing. Bultos</th><th class="num-r">Ret. Bultos</th><th class="num-r">Ing. HL</th><th class="num-r">Ret. HL</th><th class="num-r">Balance HL</th></tr></thead>
               <tbody id="tbody-activos-calibre"></tbody>
             </table></div>
           </div>
           <div class="analysis-table-card">
-            <h3>📆 Balance Mensual Activos — Año seleccionado</h3>
-            <div class="table-wrap"><table class="a-tbl">
+            <h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>📆 Balance Mensual Activos — Año seleccionado</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-activos-monthly','Activos_Balance_Mensual')">⬇ Excel</button></h3>
+            <div class="table-wrap"><table class="a-tbl" id="tbl-activos-monthly">
               <thead><tr><th>Mes</th><th>Tipo de Activo</th><th class="num-r">Ing. Bultos</th><th class="num-r">Ret. Bultos</th><th class="num-r">Bal. Bultos</th><th class="num-r">Ing. HL</th><th class="num-r">Ret. HL</th><th class="num-r">Bal. HL</th><th class="num-r">Acum. HL</th></tr></thead>
               <tbody id="tbody-activos-monthly"></tbody>
             </table></div>
           </div>
           <div class="analysis-table-card">
-            <h3>📅 Balance Anual Activos — comparativo por año</h3>
-            <div class="table-wrap"><table class="a-tbl">
+            <h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>📅 Balance Anual Activos — comparativo por año</span><button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('tbl-activos-anual','Activos_Balance_Anual')">⬇ Excel</button></h3>
+            <div class="table-wrap"><table class="a-tbl" id="tbl-activos-anual">
               <thead><tr><th>Año</th><th class="num-r">Ing. Bultos</th><th class="num-r">Ret. Bultos</th><th class="num-r">Ing. HL</th><th class="num-r">Ret. HL</th><th class="num-r">Balance HL</th></tr></thead>
               <tbody id="tbody-activos-anual"></tbody>
             </table></div>
@@ -1235,10 +1283,12 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
         <table class="a-tbl" id="tbl-chep-control">
           <thead><tr>
             <th>#</th><th>Fecha</th><th>Chofer</th><th>Remito</th>
-            <th>Tipo</th>
-            <th class="num-r">Sistema</th>
-            <th style="text-align:center;">✅ Confirmado</th>
-            <th class="num-r">Cant. Chofer</th>
+            <th class="num-r">Sist. Salida</th>
+            <th style="text-align:center;">✅ Conf. Sal.</th>
+            <th class="num-r">Cant. Chofer Sal.</th>
+            <th class="num-r">Sist. Entrada</th>
+            <th style="text-align:center;">✅ Conf. Ent.</th>
+            <th class="num-r">Cant. Chofer Ent.</th>
             <th class="num-r">Diferencia</th>
             <th>Obs. Ctrl.</th>
           </tr></thead>
@@ -1443,7 +1493,7 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
 
 <!-- DPO MODAL -->
 <div class="dpo-modal-wrap" id="dpoModalWrap" onclick="if(event.target===this)closeDpoModal()">
-  <div class="dpo-modal-box">
+  <div class="dpo-modal-box" id="dpoModalBox">
     <div class="dpo-modal-hdr">
       <div>
         <div class="dpo-modal-qnum" id="dmoNum"></div>
@@ -1451,8 +1501,8 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
       </div>
       <button class="dpo-modal-close" onclick="closeDpoModal()">✕</button>
     </div>
-    <details id="dmoDetailWrap" style="display:none;margin-bottom:14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
-      <summary style="cursor:pointer;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);">📋 Ver detalle completo del punto (Guidance, Requisitos, Scoring, Cómo verificar)</summary>
+    <details id="dmoDetailWrap" open style="display:none;margin-bottom:14px;">
+      <summary style="cursor:pointer;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">📋 Detalle completo del punto (Guidance, Requisitos, Scoring, Cómo verificar)</summary>
       <div id="dmoDetail" style="font-size:12px;line-height:1.6;color:var(--text);margin-top:10px;"></div>
     </details>
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;">Estado de cumplimiento</div>
@@ -1468,7 +1518,17 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
   </div>
 </div>
 
-<!-- MODAL DOBLE CONTROL — Salidas/Entradas (chofer/controlador, por fila) -->
+<!-- MODAL GENÉRICO — drill-down de detalle (ej. movimientos de un mes al hacer click en el gráfico) -->
+<div class="generic-modal-wrap" id="genericModalWrap" onclick="if(event.target===this)closeGenericModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:3500;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:var(--surface);border-radius:12px;max-width:900px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.4);">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:18px 22px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);">
+      <div id="genericModalTitle" style="font-size:15px;font-weight:700;color:var(--text);"></div>
+      <button onclick="closeGenericModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1;">✕</button>
+    </div>
+    <div id="genericModalBody" style="padding:18px 22px;font-size:12px;color:var(--text);"></div>
+  </div>
+</div>
+
 <div class="dpo-modal-wrap" id="seCtrlModalWrap" onclick="if(event.target===this)closeSECtrlModal()">
   <div class="dpo-modal-box" style="max-width:460px;">
     <div class="dpo-modal-hdr">
@@ -2609,9 +2669,41 @@ function nac_pctParaDia(fechaStr, bultosNAC, mapaDia) {
 // el store 'nac' en vivo no tiene filas para ese año/mes (años viejos no migrados al detalle
 // día por día). 2022 no tiene datos en el archivo maestro (no se trackeaba NAC todavía) y
 // 2023 se excluye a pedido explícito de Lucas (23/6/2026: "2023 no la tomes en cuenta").
-const HIST_NAC_PCT = {
-  '2024': {'01':0.0020650962245301867,'02':0.0015718530991188243,'03':0.0019651919943136677,'04':0.001142983635848176,'05':0.0011077492173339923,'06':0.0012945617881376928,'07':0.00119150728059819,'08':0.004822745144985361,'09':0.003477525339875399,'10':0.004429354053750661,'11':0.0024243828082497255,'12':0.0013957154039374365},
-  '2025': {'01':0.0010618007701494899,'02':0.005009935153076405,'03':0.0027645820698048514,'04':0.002252953604829901,'05':0.005026717765145505,'06':0.002464190993971611,'07':0.0030740103635110553,'08':0.001366744629923572,'09':0.0031967075121403232,'10':0.002810426818743112,'11':0.0029,'12':0.004}
+// Histórico NAC (2024-2025), extraído de la hoja "Análisis NAC" del archivo maestro
+// (2026_MASTER_-_NAC.xlsx), filas "NAC ($)", "COSTOS NO ACREDITABLES (BULTOS)", "REM|RCG" y "%"
+// de cada bloque-año. CORRECCIÓN 24/6/2026: el mapeo anterior estaba corrido un año (lo que se
+// mostraba como "2024" eran en realidad datos de 2023, y "2025" tenía los de 2024 — 2025 real no
+// aparecía). Re-verificado contra el archivo re-subido por Lucas. 2023 se excluye a pedido
+// explícito ("2023 no la tomes en cuenta"); 2022 no tiene datos (no se trackeaba NAC todavía).
+const HIST_NAC = {
+  '2024': {
+    '01':{bultos:155.77,  bultos2776:105450, importe:-1310763.87},
+    '02':{bultos:79.68,   bultos2776:103450, importe:-608456.66},
+    '03':{bultos:198.93,  bultos2776:94350,  importe:-1725362.17},
+    '04':{bultos:76.76,   bultos2776:70600,  importe:-702048.10},
+    '05':{bultos:49.10,   bultos2776:53250,  importe:-468680.45},
+    '06':{bultos:95.84,   bultos2776:67550,  importe:-888491.66},
+    '07':{bultos:71.84,   bultos2776:63600,  importe:-734427.06},
+    '08':{bultos:232.38,  bultos2776:56400,  importe:-2334085.23},
+    '09':{bultos:280.41,  bultos2776:83750,  importe:-2823988.49},
+    '10':{bultos:396.48,  bultos2776:95450,  importe:-5278601.10},
+    '11':{bultos:301.05,  bultos2776:106200, importe:-4355372.90},
+    '12':{bultos:160.70,  bultos2776:113050, importe:-2137229.71}
+  },
+  '2025': {
+    '01':{bultos:110.48,  bultos2776:102000, importe:-1600307.50},
+    '02':{bultos:415.04,  bultos2776:87450,  importe:-5454778.71},
+    '03':{bultos:284.24,  bultos2776:107850, importe:-4458977.45},
+    '04':{bultos:170.63,  bultos2776:76275,  importe:-2810930.60},
+    '05':{bultos:346.34,  bultos2776:76500,  importe:-4103756.80},
+    '06':{bultos:223.13,  bultos2776:89185,  importe:-3357907.50},
+    '07':{bultos:223.01,  bultos2776:80085,  importe:-3509790.67},
+    '08':{bultos:80.56,   bultos2776:55750,  importe:-1345900.71},
+    '09':{bultos:217.89,  bultos2776:67500,  importe:-3566481.94},
+    '10':{bultos:82.31,   bultos2776:28900,  importe:-1408510.85},
+    '11':{bultos:215.36,  bultos2776:77149,  importe:3161114.00},
+    '12':{bultos:270.53,  bultos2776:79550,  importe:2980122.00}
+  }
 };
 function nac_calcMensual(yearVal) {
   // Devuelve {mes(1-12): {bultos, importe, bultos2776, pct|null}} usando datos reales del store 'nac' + retiros
@@ -2629,15 +2721,20 @@ function nac_calcMensual(yearVal) {
     const b2776 = nac_totalBultos2776Mes(yearVal, mo);
     monthMap[mo].bultos2776 = b2776;
     monthMap[mo].pct = b2776 ? monthMap[mo].bultos / b2776 : null;
-    // Respaldo histórico: si no hay datos en vivo para este año/mes, pero el archivo maestro
-    // sí tiene el % NAC de ese período, lo usamos (marcado como histórico).
-    if (monthMap[mo].pct===null && HIST_NAC_PCT[String(yearVal)] && HIST_NAC_PCT[String(yearVal)][mo]!==undefined) {
-      monthMap[mo].pct = HIST_NAC_PCT[String(yearVal)][mo];
+    // Respaldo histórico: si no hay datos en vivo para este año/mes (años viejos no migrados al
+    // detalle día por día), pero el archivo maestro sí tiene el dato de ese período, lo usamos.
+    const hist = HIST_NAC[String(yearVal)] && HIST_NAC[String(yearVal)][mo];
+    if (monthMap[mo].pct===null && hist) {
+      monthMap[mo].bultos = hist.bultos;
+      monthMap[mo].bultos2776 = hist.bultos2776;
+      monthMap[mo].importe = hist.importe;
+      monthMap[mo].pct = hist.bultos2776 ? hist.bultos/hist.bultos2776 : null;
       monthMap[mo].historico = true;
     }
   });
   return monthMap;
 }
+
 
 // Calcula análisis diario NAC para un año/mes dado
 function nac_calcDiario(yearVal, moVal) {
@@ -2696,14 +2793,14 @@ function renderNACComparativoYCruzada() {
   const allYears = new Set((store?store.rows:[]).map(r=>String(r.cols[1])).filter(Boolean));
   const now = new Date();
   allYears.add(String(now.getFullYear()));
-  Object.keys(HIST_NAC_PCT).forEach(yr=>allYears.add(yr)); // 2024, 2025 (histórico del archivo maestro)
+  Object.keys(HIST_NAC).forEach(yr=>allYears.add(yr)); // 2024, 2025 (histórico del archivo maestro)
   allYears.delete('2023'); // excluido a pedido explícito de Lucas (23/6/2026): "2023 no la tomes en cuenta"
   const years = [...allYears].sort();
 
   // --- Comparativo: promedio anual (omite años sin ningún dato, ej. si un año no tiene filas NAC) ---
   const compRows = years.map(yr=>{
     const mm = nac_calcMensual(yr);
-    const hasAnyRow = (store?store.rows:[]).some(r=>String(r.cols[1])===yr) || !!HIST_NAC_PCT[yr];
+    const hasAnyRow = (store?store.rows:[]).some(r=>String(r.cols[1])===yr) || !!HIST_NAC[yr];
     if(!hasAnyRow) return null; // sin datos → se omite (ej. 2022, sin tracking NAC todavía)
     let avg = nac_promedioAnual(mm);
     let imputado = false;
@@ -2754,7 +2851,7 @@ function renderNACComparativoYCruzada() {
   const tbody = document.getElementById('tbody-nac-cruzada');
   if(thead) thead.innerHTML = '<tr><th>Mes</th>'+years.map(yr=>{
     const partial = yr===String(now.getFullYear());
-    return `<th>${yr}${partial?' <span style="font-size:9px;font-weight:400;color:var(--muted)">(parcial)</span>':''}</th>`;
+    return `<th class="num-r">${yr}${partial?' <span style="font-size:9px;font-weight:400;color:var(--muted)">(parcial)</span>':''}</th>`;
   }).join('')+'</tr>';
   const monthMapsByYear = {};
   years.forEach(yr=>{ monthMapsByYear[yr] = nac_calcMensual(yr); });
@@ -2788,28 +2885,61 @@ function renderNACAlertas(yearVal) {
     const mo=String(r.cols[2]).padStart(2,'0');
     bultosMes[mo] = (bultosMes[mo]||0) + (parseFloat(r.cols[7])||0);
   });
-  const UMBRAL = NAC_TARGET_PCT*3; // 3x el target → señal de alerta puntual
+  const UMBRAL = NAC_TARGET_PCT*3;       // 3x el target → 🟠 Atención
+  const UMBRAL_CRIT = NAC_TARGET_PCT*6;  // 6x el target → 🔴 Crítico
   const alertas = rowsYr.map(r=>{
     const mo=String(r.cols[2]).padStart(2,'0');
     const bultosTotalMes = bultosMes[mo]||0;
     const bultosFila = parseFloat(r.cols[7])||0;
     const pctSobreMes = bultosTotalMes>0 ? bultosFila/bultosTotalMes : 0;
-    return { fecha:r.cols[0], planta:r.cols[3], factura:r.cols[4], desc:r.cols[6]||r.cols[5], bultos:bultosFila, importe:parseARS(r.cols[8]), pct: pctSobreMes };
-  }).filter(a=>a.pct >= UMBRAL || a.importe >= 500000) // umbral combinado: % alto sobre el mes, o importe individual elevado
-   .sort((a,b)=>b.importe-a.importe);
+    const importe = parseARS(r.cols[8]);
+    const critico = pctSobreMes >= UMBRAL_CRIT || importe >= 1500000;
+    return { mo, fecha:r.cols[0], planta:r.cols[3], factura:r.cols[4], desc:r.cols[6]||r.cols[5], bultos:bultosFila, importe, pct: pctSobreMes, critico };
+  }).filter(a=>a.pct >= UMBRAL || a.importe >= 500000); // umbral combinado: % alto sobre el mes, o importe individual elevado
   if(!alertas.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:14px;">Sin remitos que superen el umbral de alerta en el período. ✅</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:14px;">Sin remitos que superen el umbral de alerta en el período. ✅</td></tr>';
     return;
   }
-  tbody.innerHTML = alertas.map(a=>`<tr style="background:rgba(224,92,92,.08);">
-    <td style="font-family:var(--font-mono);font-size:11px;">${esc(a.fecha)}</td>
+  const sevBadge = (critico) => critico
+    ? '<span style="color:var(--c-red);font-weight:700;font-size:11px;">🔴 Crítico</span>'
+    : '<span style="color:var(--warn);font-weight:700;font-size:11px;">🟠 Atención</span>';
+  const rowHtml = (a, indent) => `<tr${indent?` class="${indent}" style="display:none;${a.critico?'background:rgba(224,92,92,.10);':'background:rgba(245,166,35,.08);'}"`:''}>
+    <td style="font-family:var(--font-mono);font-size:11px;${indent?'padding-left:26px;':''}">${esc(a.fecha)}</td>
+    <td>${sevBadge(a.critico)}</td>
     <td>${esc(a.planta)}</td>
     <td><code>${esc(a.factura)}</code></td>
     <td>${esc(a.desc)}</td>
     <td class="num-r">${a.bultos.toFixed(2)}</td>
     <td class="num-r" style="color:var(--c-red);font-weight:700;">${fmtARS(a.importe)}</td>
-    <td class="num-r" style="color:var(--c-red);font-weight:700;">${(a.pct*100).toFixed(2)}%</td>
-  </tr>`).join('');
+    <td class="num-r" style="color:${a.critico?'var(--c-red)':'var(--warn)'};font-weight:700;">${(a.pct*100).toFixed(2)}%</td>
+  </tr>`;
+  // Agrupar por mes (desplegable, como el seguimiento diario) — ordenado por fecha ascendente dentro de cada mes
+  const porMes = {};
+  alertas.forEach(a=>{ if(!porMes[a.mo]) porMes[a.mo]=[]; porMes[a.mo].push(a); });
+  Object.values(porMes).forEach(arr=>arr.sort((x,y)=>parseDDMMYYYY(x.fecha)-parseDDMMYYYY(y.fecha)));
+  const mesesConAlertas = Object.keys(porMes).sort((a,b)=>parseInt(b,10)-parseInt(a,10)); // mes más reciente primero
+  tbody.innerHTML = mesesConAlertas.map(mo=>{
+    const arr = porMes[mo];
+    const nCrit = arr.filter(a=>a.critico).length;
+    const nAtenc = arr.length - nCrit;
+    const claseGrupo = `nac-alerta-grp-${yearVal}-${mo}`;
+    const headerRow = `<tr class="nac-alerta-hdr" id="nac-alerta-hdr-${yearVal}-${mo}" onclick="toggleNacAlertaMes('${yearVal}-${mo}')" style="cursor:pointer;background:var(--surface2);font-weight:700;">
+      <td colspan="8"><span class="nac-toggle-icon" style="display:inline-block;width:14px;">▸</span>${MESES[parseInt(mo,10)-1]} —
+        ${nCrit?`<span style="color:var(--c-red);">🔴 ${nCrit} crítico${nCrit!==1?'s':''}</span>`:''}${(nCrit&&nAtenc)?' · ':''}${nAtenc?`<span style="color:var(--warn);">🟠 ${nAtenc} atención</span>`:''}
+      </td>
+    </tr>`;
+    const detailRows = arr.map(a=>rowHtml(a, claseGrupo)).join('');
+    return headerRow + detailRows;
+  }).join('');
+}
+function toggleNacAlertaMes(key) {
+  const rows = document.querySelectorAll('.nac-alerta-grp-'+key);
+  if(!rows.length) return;
+  const isHidden = rows[0].style.display === 'none';
+  rows.forEach(r => r.style.display = isHidden ? '' : 'none');
+  const hdr = document.getElementById('nac-alerta-hdr-'+key);
+  const icon = hdr ? hdr.querySelector('.nac-toggle-icon') : null;
+  if(icon) icon.textContent = isHidden ? '▾' : '▸';
 }
 
 function renderAnalysis() {
@@ -2871,12 +3001,12 @@ function renderAnalysis() {
   if(currentPeriod==='year') {
     if(seTrendTitle) seTrendTitle.textContent = 'Tendencia — A Liquidar por Año';
     if(nacTrendTitle) nacTrendTitle.textContent = 'Tendencia — Importe NAC por Año';
-    renderBarChart('chart-se-liq', buildYearlySeriesSE(null), 'var(--accent)', 'A Liquidar');
+    renderDivergingBarChart('chart-se-liq', buildYearlySeriesSE(null), 'var(--c-teal)', 'var(--danger)');
     renderBarChart('chart-nac-monthly', buildYearlySeriesNAC(), 'var(--danger)', 'Importe NAC');
   } else {
-    if(seTrendTitle) seTrendTitle.textContent = `Tendencia — A Liquidar por Mes (${yearVal||'—'})`;
+    if(seTrendTitle) seTrendTitle.textContent = `Tendencia — A Liquidar por Mes (${yearVal||'—'}) · click en un mes para ver el detalle`;
     if(nacTrendTitle) nacTrendTitle.textContent = `Tendencia — Importe NAC por Mes (${yearVal||'—'})`;
-    renderBarChart('chart-se-liq', buildMonthlySELiq(yearVal), 'var(--accent)', 'A Liquidar');
+    renderDivergingBarChart('chart-se-liq', buildMonthlySELiq(yearVal), 'var(--c-teal)', 'var(--danger)', {onClick:'onTrendBarClick'});
     renderBarChart('chart-nac-monthly', buildMonthlyNAC(yearVal), 'var(--danger)', 'Importe NAC');
   }
 
@@ -3016,6 +3146,7 @@ function renderAnalysis() {
     return`<tr><td>${esc(cal)}</td><td class="num-r">${fmtN(d.ingB)}</td><td class="num-r">${fmtN(d.retB)}</td><td class="num-r">${d.ingH.toFixed(1)}</td><td class="num-r">${d.retH.toFixed(1)}</td><td class="num-r" style="${balH<0?'color:var(--danger)':''}">${balH>=0?'+':''}${balH.toFixed(1)}</td></tr>`;
   }).join('')||'<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:12px">Sin datos</td></tr>';
   // Análisis mensual y anual Activos
+  renderActivosCierreActual();
   renderActivosExportMonthly(yearVal);
   renderActivosExportAnual();
   // Monthly balance tables
@@ -3099,6 +3230,32 @@ function activosExport_parseRows(store) {
     const calibre=r.cols[aCalibreIdx>=0?aCalibreIdx:3]||'S/D';
     return {yr, mo, bultos, hl, isIng, calibre};
   });
+}
+// Cierre actual: deuda o favor ACUMULADO por Tipo de Activo, usando todo el histórico cargado
+// (no solo el año filtrado), para que el número de arriba sea "cómo estamos hoy" con Planta.
+// Pedido de Lucas (24/6/2026): que el cierre quede claro y visible arriba de la sección.
+function renderActivosCierreActual() {
+  const el = document.getElementById('activos-cierre-stats');
+  if(!el) return;
+  const store = loadStore('activos');
+  const parsed = activosExport_parseRows(store);
+  if(!parsed.length){ el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px;">Sin datos — subí el Export Activos desde la pestaña correspondiente</div>'; return; }
+  // Orden cronológico real (año+mes) para acumular en el orden correcto
+  const ordenado = [...parsed].sort((a,b)=> (a.yr+a.mo).localeCompare(b.yr+b.mo));
+  const acumPorCalibre = {};
+  ordenado.forEach(r=>{
+    if(!acumPorCalibre[r.calibre]) acumPorCalibre[r.calibre]=0;
+    acumPorCalibre[r.calibre] += (r.isIng ? r.hl : -r.hl);
+  });
+  const calibres = Object.entries(acumPorCalibre).sort((a,b)=>a[1]-b[1]); // deudas más grandes primero
+  const totalHL = calibres.reduce((s,[,v])=>s+v,0);
+  const cards = calibres.map(([cal,hl])=>{
+    const col = hl<0?'var(--c-red)':hl>0?'var(--c-teal)':'var(--c-green)';
+    const txt = hl<0?'DEBEMOS':hl>0?'A FAVOR':'AL DÍA';
+    return `<div class="stat-card ${hl<0?'red':'green'}"><div class="stat-label">${esc(cal)}</div><div class="stat-value" style="color:${col};">${hl>=0?'+':''}${hl.toFixed(1)} HL</div><div class="stat-sub" style="color:${col};font-weight:700;">${txt}</div></div>`;
+  }).join('');
+  const totCol = totalHL<0?'var(--c-red)':'var(--c-teal)';
+  el.innerHTML = cards + `<div class="stat-card ${totalHL<0?'red':'green'}" style="border:2px solid ${totCol};"><div class="stat-label">TOTAL (todos los activos)</div><div class="stat-value" style="color:${totCol};">${totalHL>=0?'+':''}${totalHL.toFixed(1)} HL</div><div class="stat-sub" style="color:${totCol};font-weight:700;">${totalHL<0?'DEBEMOS A PLANTA':'A FAVOR DE PLANTA'}</div></div>`;
 }
 function renderActivosExportMonthly(yearVal) {
   const tbody = document.getElementById('tbody-activos-monthly');
@@ -3189,6 +3346,90 @@ function renderBarChart(containerId, data, color, label) {
   }).join('')}</div>`;
 }
 
+// Gráfico de barras DIVERGENTE: positivos crecen hacia arriba (azul/teal), negativos crecen hacia
+// abajo (rojo), con una línea de cero al medio. Pedido de Lucas (24/6/2026) para diferenciar
+// visualmente deuda (rojo, hacia abajo) de saldo a favor (azul, hacia arriba). Cada barra de mes
+// es clickeable y abre el detalle completo de movimientos de ese mes.
+function renderDivergingBarChart(containerId, data, posColor, negColor, opts) {
+  opts = opts || {};
+  const el=document.getElementById(containerId);
+  if(!el) return;
+  const vals=data.map(d=>d.value);
+  const maxV=Math.max(...vals.map(v=>Math.abs(v)),1);
+  const H=62;
+  el.innerHTML=`<div class="bar-chart-div">${data.map((d,i)=>{
+    const h=Math.max(Math.round((Math.abs(d.value)/maxV)*H), d.value!==0?2:0);
+    const tip=`${d.label}: ${d.value>=0?'+':'-'}${Math.abs(d.value).toLocaleString('es-AR')}`;
+    const isPos = d.value>=0;
+    const c = d.value===0 ? 'var(--border)' : (isPos ? posColor : negColor);
+    const shortVal=Math.abs(d.value)>=1000?Math.round(Math.abs(d.value)/1000)+'k':Math.round(Math.abs(d.value))||'';
+    const clickAttr = opts.onClick ? ` onclick="${opts.onClick}(${i})" style="cursor:pointer;"` : '';
+    return`<div class="bar-group-div"${clickAttr} title="Click para ver el detalle de ${esc(d.label)}">
+      <div class="bar-half-pos">${(isPos&&d.value!==0)?`<div class="bar bar-up" style="height:${h}px;background:${c}" data-tip="${esc(tip)}"></div>`:''}</div>
+      <div class="bar-zero-line"></div>
+      <div class="bar-half-neg">${(!isPos&&d.value!==0)?`<div class="bar bar-down" style="height:${h}px;background:${c}" data-tip="${esc(tip)}"></div>`:''}</div>
+      <div class="bar-label">${esc(d.label)}</div>
+      <div class="bar-val" style="color:${d.value===0?'var(--muted)':(isPos?posColor:negColor)}">${d.value!==0?(isPos?'+':'-')+shortVal:''}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// Drill-down: click en un mes del gráfico "A Liquidar" → modal con TODOS los movimientos S/E de ese mes
+function onTrendBarClick(monthIdx) {
+  const yearVal = document.getElementById('filter-year').value || String(new Date().getFullYear());
+  const mo = String(monthIdx+1).padStart(2,'0');
+  const allRows = loadStore('se').rows;
+  const rows = allRows.filter(r=>String(r.cols[1])===String(yearVal) && String(r.cols[2]).padStart(2,'0')===mo)
+    .sort((a,b)=>parseDDMMYYYY(a.cols[0])-parseDDMMYYYY(b.cols[0]));
+  let sal=0,ent=0; rows.forEach(r=>{ sal+=parseFloat(r.cols[7])||0; ent+=parseFloat(r.cols[8])||0; });
+  const dif = ent-sal;
+  const body = `
+    <div class="stats-grid stats-grid-mini" style="margin-bottom:14px;">
+      <div class="stat-card blue"><div class="stat-label">Salidas</div><div class="stat-value">${fmtN(sal)}</div></div>
+      <div class="stat-card green"><div class="stat-label">Entradas</div><div class="stat-value">${fmtN(ent)}</div></div>
+      <div class="stat-card ${dif<0?'red':'green'}"><div class="stat-label">A Liquidar</div><div class="stat-value">${dif>=0?'+':''}${fmtN(dif)}</div></div>
+      <div class="stat-card"><div class="stat-label">Movimientos</div><div class="stat-value">${rows.length}</div></div>
+    </div>
+    <div class="table-wrap"><table class="a-tbl">
+      <thead><tr><th>Fecha</th><th>Chofer</th><th>Remito</th><th>Cód</th><th>Descripción</th><th class="num-r">Salida</th><th class="num-r">Entrada</th><th class="num-r">A Liquidar</th></tr></thead>
+      <tbody>${rows.map(r=>{
+        const s=parseFloat(r.cols[7])||0, e=parseFloat(r.cols[8])||0, l=parseFloat(r.cols[9])||0;
+        return `<tr><td style="font-family:var(--font-mono);font-size:11px;">${esc(r.cols[0])}</td><td>${esc(r.cols[3])}</td><td style="font-family:var(--font-mono);font-size:11px;">${esc(r.cols[4])}</td><td>${esc(r.cols[5])}</td><td>${esc(r.cols[6])}</td><td class="num-r">${fmtN(s)}</td><td class="num-r">${fmtN(e)}</td><td class="num-r" style="color:${l<0?'var(--c-red)':l>0?'var(--c-teal)':'var(--c-green)'};font-weight:600;">${l>=0?'+':''}${fmtN(l)}</td></tr>`;
+      }).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:14px;">Sin movimientos este mes.</td></tr>'}</tbody>
+    </table></div>`;
+  openGenericModal(`📦 ${MESES[monthIdx]} ${yearVal} — Detalle de movimientos Salidas-Entradas`, body);
+}
+function openGenericModal(title, bodyHtml) {
+  document.getElementById('genericModalTitle').textContent = title;
+  document.getElementById('genericModalBody').innerHTML = bodyHtml;
+  document.getElementById('genericModalWrap').style.display = 'flex';
+}
+function closeGenericModal() {
+  document.getElementById('genericModalWrap').style.display = 'none';
+}
+
+// PDF dedicado solo a la narrativa (SE o NAC), para imprimir/compartir sin el resto de la sección
+function printNarrativaPDF(section) {
+  const listEl = document.getElementById(section==='se' ? 'se-narrativa-list' : 'nac-narrativa-list');
+  if(!listEl) return;
+  const yearVal=document.getElementById('filter-year').value;
+  const monthVal=String(document.getElementById('filter-month').value).padStart(2,'0');
+  const periodLabel=monthVal&&currentPeriod==='month'?`${MESES[parseInt(monthVal,10)-1]} ${yearVal}`:yearVal||'Todo el período';
+  const subtitle = section==='se' ? 'Narrativa — Salidas-Entradas' : 'Narrativa — NAC';
+  const CSS=`@page{size:A4;margin:16mm 14mm}*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1d2e;font-size:11px;line-height:1.6}
+  .hdr{background:#141826;color:#fff;padding:14px 20px;border-radius:6px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end}
+  .hdr h1{font-size:18px;font-weight:700}.hdr h1 span{color:#26d07c}
+  .hdr .per{font-size:14px;font-weight:800;color:#0a1a12;background:#26d07c;padding:6px 14px;border-radius:5px;}
+  .foot{margin-top:20px;font-size:9px;color:#aaa;text-align:center;border-top:1px solid #eee;padding-top:6px}`;
+  const hdr=`<div class="hdr"><div><h1>BECCACECE HNOS <span>·</span> Quilmes</h1><div style="font-size:10px;color:#7a8099;margin-top:2px">${subtitle}</div></div><div class="per">📅 ${periodLabel}</div></div>`;
+  const foot=`<div class="foot">Generado ${new Date().toLocaleString('es-AR')} · Beccacece Hnos SA · CUIT 30-52949908-2</div>`;
+  const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Narrativa ${section.toUpperCase()}</title><style>${CSS}</style></head><body>${hdr}${listEl.innerHTML}${foot}</body></html>`;
+  const w=window.open('','_blank','width=900,height=700');
+  w.document.write(html); w.document.close();
+  w.onload=()=>{ w.focus(); w.print(); };
+  showToast('PDF de narrativa listo ✓');
+}
+
 function renderHBarChart(containerId, data, color) {
   const el=document.getElementById(containerId);
   if(!el) return;
@@ -3234,8 +3475,10 @@ function downloadSectionPDF(section) {
   let body='';
   if(section==='se'){
     let totalSal=0,totalEnt=0,totalLiq=0,chepLiq=0;
-    seRows.forEach(r=>{totalSal+=parseFloat(r.cols[7])||0;totalEnt+=parseFloat(r.cols[8])||0;totalLiq+=parseFloat(r.cols[9])||0;if(r.cols[5]==='40517')chepLiq+=parseFloat(r.cols[9])||0;});
+    seRows.forEach(r=>{if(esBotReco(r.cols[6]))return;totalSal+=parseFloat(r.cols[7])||0;totalEnt+=parseFloat(r.cols[8])||0;totalLiq+=parseFloat(r.cols[9])||0;if(r.cols[5]==='40517')chepLiq+=parseFloat(r.cols[9])||0;});
     const remitos=new Set(seRows.map(r=>r.cols[4])).size;
+    const cloneTbl = (id) => { const t=document.getElementById(id); return t ? t.outerHTML : ''; };
+    const deudaSintesisBody = document.getElementById('se-deuda-sintesis-body');
     body=`<div style="background:#fff8e6;border:1px solid #f0d98c;border-left:3px solid #b8860b;border-radius:6px;padding:8px 10px;margin-bottom:12px;font-size:9.5px;color:#5c4a1a;line-height:1.5;">
       ℹ️ <strong>Aclaración de términos:</strong> "Salidas" = activos que Quilmes planta nos envía a nosotros. "Entradas" = activos que nosotros le devolvemos a planta en cada camión de acarreo. Es la inversión que usa la boleta oficial de planta.
     </div>
@@ -3245,6 +3488,14 @@ function downloadSectionPDF(section) {
       <div class="kpi"><div class="lbl">Entradas</div><div class="val grn">${fmtN(totalEnt)}</div></div>
       <div class="kpi"><div class="lbl">A Liquidar</div><div class="val ${totalLiq<0?'red':'grn'}">${totalLiq>=0?'+':''}${fmtN(totalLiq)}</div></div>
     </div>
+    <div class="sec">🧮 Síntesis de Deuda a Planta</div>
+    ${deudaSintesisBody ? deudaSintesisBody.innerHTML : '<div style="font-size:10px;color:#999;">Sin datos</div>'}
+    <div class="sec">📋 Deuda por Activo — mes por mes</div>
+    ${cloneTbl('tbl-se-deuda-mensual')}
+    <div class="sec">Por Producto — período seleccionado</div>
+    ${cloneTbl('tbl-se-prod')}
+    <div class="sec">Por Chofer — período seleccionado</div>
+    ${cloneTbl('tbl-se-chofer')}
     <div class="sec">📝 Narrativa — qué pasó con cada remito</div>
     <div style="font-size:10px;line-height:1.6;">${buildSENarrativa(seRows,{limit:0,pdf:true})}</div>`;
   } else if(section==='nac'){
@@ -3331,12 +3582,52 @@ function downloadExcel() {
   styleExcelSheet(ws4, nacPHeader.length);
   XLSX.utils.book_append_sheet(wb, ws4, 'NAC-Planta');
 
+  // Todas las demás tablas visibles, una hoja por tabla (pedido Lucas 24/6/2026: "excel general
+  // que exporte todas las tablas de una vez"). Se agregan solo si la tabla existe y tiene filas.
+  const otrasTablas = [
+    ['tbl-se-monthly','SE-Balance-Mensual'], ['tbl-se-deuda-mensual','SE-Deuda-x-Activo-Mes'],
+    ['tbl-se-prod','SE-Por-Producto'], ['tbl-se-chofer','SE-Por-Chofer'],
+    ['tbl-nac-monthly','NAC-Analisis-Mensual'], ['tbl-nac-comparativo','NAC-Comparativo-Hist'],
+    ['tbl-nac-cruzada','NAC-Cruzada-Mensual'], ['tbl-nac-daily','NAC-Seguimiento-Diario'],
+    ['tbl-nac-anual-resumen','NAC-Resumen-Anual'], ['tbl-nac-alertas','NAC-Alertas'],
+    ['tbl-chep-calibre','CHEP-Por-Calibre'], ['tbl-chep-centro','CHEP-Por-Centro'],
+    ['tbl-chep-export-monthly','CHEP-Balance-Mensual'], ['tbl-chep-anual','CHEP-Balance-Anual'],
+    ['tbl-activos-calibre','Activos-Por-Calibre'], ['tbl-activos-monthly','Activos-Balance-Mensual'],
+    ['tbl-activos-anual','Activos-Balance-Anual']
+  ];
+  otrasTablas.forEach(([id,name])=>{
+    const t = document.getElementById(id);
+    if(!t || !t.rows || t.rows.length<2) return; // sin filas de datos, se omite
+    try {
+      const wsX = XLSX.utils.table_to_sheet(t, {raw:false});
+      styleExcelSheet(wsX, t.rows[0].cells.length);
+      XLSX.utils.book_append_sheet(wb, wsX, name.slice(0,31));
+    } catch(e) { /* tabla no exportable, se omite sin interrumpir el resto */ }
+  });
+
   XLSX.writeFile(wb, `Beccacece_Informe_${periodLabel.replace(/ /g,'_')}.xlsx`);
   showToast('Excel descargado ✓');
 }
 
 function styleExcelSheet(ws, ncols) {
   if(!ws['!cols']) ws['!cols']=Array(ncols).fill({wch:18});
+}
+
+// Exportar UNA tabla puntual a Excel — lee directo del DOM (incluye lo que ya se ve en pantalla,
+// con el filtro de período activo). Pedido de Lucas (24/6/2026): botón de excel en cada tabla.
+function exportTableToExcel(tableId, niceName) {
+  const tbl = document.getElementById(tableId);
+  if(!tbl) { showToast('No hay datos para exportar'); return; }
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.table_to_sheet(tbl, {raw:false});
+  styleExcelSheet(ws, (tbl.rows[0]?tbl.rows[0].cells.length:6));
+  XLSX.utils.book_append_sheet(wb, ws, (niceName||tableId).slice(0,31));
+  XLSX.writeFile(wb, `${(niceName||tableId).replace(/[^a-zA-Z0-9_]+/g,'_')}_${new Date().toISOString().slice(0,10)}.xlsx`);
+  showToast(`Excel "${niceName||tableId}" exportado ✓`);
+}
+// Pequeño botón inline para insertar junto a cada <h3> de tabla
+function excelBtnHtml(tableId, niceName) {
+  return `<button class="btn btn-ghost btn-sm" onclick="exportTableToExcel('${tableId}','${(niceName||tableId).replace(/'/g,"\\'")}')" title="Descargar esta tabla a Excel">⬇ Excel</button>`;
 }
 
 // ============================================================
@@ -3602,7 +3893,7 @@ function renderNACAnnualSummary() {
   const liveYears = new Set((store?store.rows:[]).map(r=>String(r.cols[1])).filter(Boolean));
   const now = new Date();
   liveYears.add(String(now.getFullYear()));
-  Object.keys(HIST_NAC_PCT).forEach(yr=>liveYears.add(yr));
+  Object.keys(HIST_NAC).forEach(yr=>liveYears.add(yr));
   liveYears.delete('2023'); // excluido a pedido de Lucas
   liveYears.delete('2022'); // sin datos (no se trackeaba NAC todavía)
   const years = [...liveYears].sort();
@@ -3656,6 +3947,8 @@ function renderNACMonthlyTable() {
   const pctsReales = mesesConDatoReal.map(mo=>monthMap[mo].pct);
   const pctPromedio2026 = pctsReales.length ? pctsReales.reduce((a,b)=>a+b,0)/pctsReales.length : null;
   const bultosPromedio2026 = mesesConDatoReal.length ? mesesConDatoReal.reduce((s,mo)=>s+monthMap[mo].bultos,0)/mesesConDatoReal.length : 0;
+  const importePromedio2026 = mesesConDatoReal.length ? mesesConDatoReal.reduce((s,mo)=>s+monthMap[mo].importe,0)/mesesConDatoReal.length : 0;
+  const facturasPromedio2026 = mesesConDatoReal.length ? Math.round(mesesConDatoReal.reduce((s,mo)=>s+monthMap[mo].facturas.size,0)/mesesConDatoReal.length) : 0;
   Object.keys(monthMap).forEach(mo=>{
     const moNum = parseInt(mo,10);
     const sinDatos = monthMap[mo].importe===0 && monthMap[mo].bultos===0;
@@ -3663,6 +3956,8 @@ function renderNACMonthlyTable() {
       monthMap[mo].imputado = true;
       monthMap[mo].pct = pctPromedio2026;
       monthMap[mo].bultos = bultosPromedio2026;
+      monthMap[mo].importe = importePromedio2026;
+      monthMap[mo].facturasProm = facturasPromedio2026;
     }
   });
   let accumImp = 0;
@@ -3682,7 +3977,8 @@ function renderNACMonthlyTable() {
     const sobre = d.pct!==null && d.pct > NAC_TARGET_PCT;
     const color = d.pct===null ? 'var(--muted)' : sobre ? 'var(--c-red)' : 'var(--c-green)';
     const dot = d.pct===null ? '—' : sobre ? '🔴' : '🟢';
-    const imputBadge = d.imputado ? ' <span title="Sin facturación NAC cargada para este mes; se muestra el promedio de % NAC de los meses del año con datos reales" style="font-size:9px;font-weight:400;color:var(--muted);">(promedio 2026)</span>' : '';
+    const imputBadge = d.imputado ? ' <span title="Sin facturación NAC cargada para este mes; se muestra el promedio de los meses del año con datos reales" style="font-size:9px;font-weight:400;color:var(--muted);">(promedio 2026)</span>' : '';
+    const facturasTxt = d.imputado ? `≈${d.facturasProm}` : d.facturas.size;
     return `<tr${d.imputado?' style="opacity:.85;"':''}>
       <td><strong>${mes}</strong>${imputBadge}</td>
       <td class="num-r">${d.imputado?'≈':''}${d.bultos.toFixed(2)}</td>
@@ -3690,10 +3986,10 @@ function renderNACMonthlyTable() {
       <td class="num-r" style="color:${color};font-weight:${sobre?700:400};">${d.imputado?'≈':''}${pctStr}</td>
       <td class="num-r" style="opacity:.6;">${TARGET_LBL}</td>
       <td><span style="color:${color};font-weight:600;font-size:11px;">${dot}</span></td>
-      <td class="num-r" style="color:var(--c-red);">${d.imputado?'—':fmtARS(d.importe)}</td>
-      <td class="num-r" style="color:var(--c-amber);">${d.imputado?'—':'USD '+usd.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td>
-      <td class="num-r">${d.imputado?'—':fmtARS(accumImp)}</td>
-      <td class="num-r">${d.imputado?'—':d.facturas.size}</td>
+      <td class="num-r" style="color:var(--c-red);">${d.imputado?'≈':''}${fmtARS(d.importe)}</td>
+      <td class="num-r" style="color:var(--c-amber);">${d.imputado?'≈':''}USD ${usd.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td>
+      <td class="num-r">${d.imputado?'≈':''}${fmtARS(accumImp)}</td>
+      <td class="num-r">${facturasTxt}</td>
     </tr>`;
   }).join('');
 }
@@ -3961,43 +4257,52 @@ function renderCHEPControl() {
   tbody.innerHTML = filtered.map((r,i)=>{
     const id = r.id;
     const c = ctrl[id] || {};
-    const confirmed = c.confirmed || false;
-    const cantChofer = c.cantChofer !== undefined ? c.cantChofer : '';
+    const confirmedSal = c.confirmedSal || false;
+    const confirmedEnt = c.confirmedEnt || false;
+    const cantChoferSal = c.cantChoferSal !== undefined ? c.cantChoferSal : '';
+    const cantChoferEnt = c.cantChoferEnt !== undefined ? c.cantChoferEnt : '';
     const obsCtrl = c.obsCtrl || '';
     const salidas = parseFloat(r.cols[7])||0;
     const entradas = parseFloat(r.cols[8])||0;
-    const esSalida = salidas > 0;
-    const sistVal = esSalida ? salidas : entradas;
-    const tipoTxt = esSalida
-      ? '<span style="color:var(--c-navy-light);font-weight:600;">⬇ Salida</span>'
-      : '<span style="color:var(--c-teal);font-weight:600;">⬆ Entrada</span>';
-    const diff = cantChofer !== '' ? (parseFloat(cantChofer)||0) - sistVal : null;
-    const diffStyle = diff === null ? '' : diff === 0 ? 'color:var(--c-green);font-weight:700;' : 'color:var(--c-red);font-weight:700;';
-    const diffTxt = diff === null ? '—' : (diff>=0?'+':'')+fmtN(diff);
-    return `<tr style="${confirmed?'background:rgba(46,125,82,.06);':''}">
+    const diffSal = cantChoferSal !== '' ? (parseFloat(cantChoferSal)||0) - salidas : null;
+    const diffEnt = cantChoferEnt !== '' ? (parseFloat(cantChoferEnt)||0) - entradas : null;
+    const diffStyleSal = diffSal === null ? 'color:var(--muted);' : diffSal === 0 ? 'color:var(--c-green);font-weight:700;' : 'color:var(--c-red);font-weight:700;';
+    const diffStyleEnt = diffEnt === null ? 'color:var(--muted);' : diffEnt === 0 ? 'color:var(--c-green);font-weight:700;' : 'color:var(--c-red);font-weight:700;';
+    const diffTxt = `<span style="${diffStyleSal}">Sal: ${diffSal===null?'—':(diffSal>=0?'+':'')+fmtN(diffSal)}</span><br><span style="${diffStyleEnt}">Ent: ${diffEnt===null?'—':(diffEnt>=0?'+':'')+fmtN(diffEnt)}</span>`;
+    const ambosConfirmados = confirmedSal && confirmedEnt;
+    return `<tr style="${ambosConfirmados?'background:rgba(46,125,82,.06);':''}">
       <td style="color:var(--muted)">${i+1}</td>
       <td>${esc(r.cols[0])}</td>
       <td>${esc(r.cols[3])}</td>
       <td style="font-family:var(--font-mono);font-size:11px;">${esc(r.cols[4])}</td>
-      <td style="font-size:12px;white-space:nowrap;">${tipoTxt}</td>
-      <td class="num-r" style="font-weight:600;">${fmtN(sistVal)}</td>
+      <td class="num-r" style="font-weight:600;color:var(--c-navy-light);">${fmtN(salidas)}</td>
       <td style="text-align:center;">
-        <input type="checkbox" ${confirmed?'checked':''} onchange="saveCHEPCtrlField(${id},'confirmed',this.checked)"
+        <input type="checkbox" ${confirmedSal?'checked':''} onchange="saveCHEPCtrlField(${id},'confirmedSal',this.checked)"
           style="width:16px;height:16px;cursor:pointer;accent-color:var(--c-green);">
       </td>
       <td class="num-r">
-        <input type="number" min="0" step="1" value="${cantChofer}" placeholder="—"
-          style="width:70px;padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-family:var(--font-mono);font-size:12px;text-align:right;background:var(--bg);color:var(--text);"
-          onchange="saveCHEPCtrlField(${id},'cantChofer',+this.value);renderCHEPControl();">
+        <input type="number" min="0" step="1" value="${cantChoferSal}" placeholder="—"
+          style="width:65px;padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-family:var(--font-mono);font-size:12px;text-align:right;background:var(--bg);color:var(--text);"
+          onchange="saveCHEPCtrlField(${id},'cantChoferSal',+this.value);renderCHEPControl();">
       </td>
-      <td class="num-r" style="${diffStyle}">${diffTxt}</td>
+      <td class="num-r" style="font-weight:600;color:var(--c-teal);">${fmtN(entradas)}</td>
+      <td style="text-align:center;">
+        <input type="checkbox" ${confirmedEnt?'checked':''} onchange="saveCHEPCtrlField(${id},'confirmedEnt',this.checked)"
+          style="width:16px;height:16px;cursor:pointer;accent-color:var(--c-green);">
+      </td>
+      <td class="num-r">
+        <input type="number" min="0" step="1" value="${cantChoferEnt}" placeholder="—"
+          style="width:65px;padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-family:var(--font-mono);font-size:12px;text-align:right;background:var(--bg);color:var(--text);"
+          onchange="saveCHEPCtrlField(${id},'cantChoferEnt',+this.value);renderCHEPControl();">
+      </td>
+      <td class="num-r" style="font-size:11px;line-height:1.5;">${diffTxt}</td>
       <td>
         <input type="text" value="${esc(obsCtrl)}" placeholder="Obs…"
           style="width:130px;padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-size:12px;background:var(--bg);color:var(--text);"
           onchange="saveCHEPCtrlField(${id},'obsCtrl',this.value)">
       </td>
     </tr>`;
-  }).join('')||`<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--muted);">Sin registros CHEP (cód ${CHEP_COD_SE}) cargados en Salidas-Entradas</td></tr>`;
+  }).join('')||`<tr><td colspan="12" style="text-align:center;padding:20px;color:var(--muted);">Sin registros CHEP (cód ${CHEP_COD_SE}) cargados en Salidas-Entradas</td></tr>`;
 }
 
 function saveCHEPCtrlField(id, field, value) {
@@ -4028,15 +4333,15 @@ function exportCHEPMgmtExcel(modulo) {
   }
   const ctrl = loadCHEPCtrl();
   const allRows = loadStore('se').rows.filter(r=>String(r.cols[5]).trim()===CHEP_COD_SE);
-  const header = ['Fecha','Chofer','Remito','Cód Prod.','Tipo','Sistema','Confirmado','Cant. Chofer','Diferencia','Obs. Ctrl.'];
+  const header = ['Fecha','Chofer','Remito','Sist. Salida','Confirmado Sal.','Cant. Chofer Sal.','Diferencia Sal.','Sist. Entrada','Confirmado Ent.','Cant. Chofer Ent.','Diferencia Ent.','Obs. Ctrl.'];
   const data = allRows.map(r=>{
     const c = ctrl[r.id]||{};
     const sal = parseFloat(r.cols[7])||0, ent = parseFloat(r.cols[8])||0;
-    const esSalida = sal > 0;
-    const sistVal = esSalida ? sal : ent;
-    const cant = c.cantChofer !== undefined ? c.cantChofer : '';
-    const diff = cant !== '' ? (parseFloat(cant)||0) - sistVal : '';
-    return [r.cols[0],r.cols[3],r.cols[4],r.cols[5],esSalida?'Salida':'Entrada',sistVal,c.confirmed?'Sí':'No',cant,diff,c.obsCtrl||''];
+    const cantSal = c.cantChoferSal !== undefined ? c.cantChoferSal : '';
+    const cantEnt = c.cantChoferEnt !== undefined ? c.cantChoferEnt : '';
+    const diffSal = cantSal !== '' ? (parseFloat(cantSal)||0) - sal : '';
+    const diffEnt = cantEnt !== '' ? (parseFloat(cantEnt)||0) - ent : '';
+    return [r.cols[0],r.cols[3],r.cols[4],sal,c.confirmedSal?'Sí':'No',cantSal,diffSal,ent,c.confirmedEnt?'Sí':'No',cantEnt,diffEnt,c.obsCtrl||''];
   });
   const ws = XLSX.utils.aoa_to_sheet([header,...data]);
   styleExcelSheet(ws, header.length);
@@ -4061,16 +4366,18 @@ body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1d2e;font-size:11px;line-h
 table{width:100%;border-collapse:collapse;font-size:10px;margin-top:10px;table-layout:fixed}
 thead th{background:#f0f2fa;padding:5px 7px;text-align:left;font-weight:700;color:#555;text-transform:uppercase;font-size:8.5px;border-bottom:2px solid #dde;white-space:nowrap;overflow:hidden}
 tbody td{padding:4px 7px;border-bottom:1px solid #eef;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.num{text-align:right}
-#tbl-chep-control th:nth-child(1),#tbl-chep-control td:nth-child(1){width:3%}
-#tbl-chep-control th:nth-child(2),#tbl-chep-control td:nth-child(2){width:9%}
-#tbl-chep-control th:nth-child(3),#tbl-chep-control td:nth-child(3){width:11%}
-#tbl-chep-control th:nth-child(4),#tbl-chep-control td:nth-child(4){width:16%;white-space:nowrap}
+#tbl-chep-control th:nth-child(1),#tbl-chep-control td:nth-child(1){width:2.5%}
+#tbl-chep-control th:nth-child(2),#tbl-chep-control td:nth-child(2){width:8%}
+#tbl-chep-control th:nth-child(3),#tbl-chep-control td:nth-child(3){width:9%}
+#tbl-chep-control th:nth-child(4),#tbl-chep-control td:nth-child(4){width:10%;white-space:nowrap}
 #tbl-chep-control th:nth-child(5),#tbl-chep-control td:nth-child(5){width:8%}
-#tbl-chep-control th:nth-child(6),#tbl-chep-control td:nth-child(6){width:8%}
-#tbl-chep-control th:nth-child(7),#tbl-chep-control td:nth-child(7){width:11%}
-#tbl-chep-control th:nth-child(8),#tbl-chep-control td:nth-child(8){width:10%}
-#tbl-chep-control th:nth-child(9),#tbl-chep-control td:nth-child(9){width:9%}
-#tbl-chep-control th:nth-child(10),#tbl-chep-control td:nth-child(10){width:15%;white-space:normal}
+#tbl-chep-control th:nth-child(6),#tbl-chep-control td:nth-child(6){width:7%}
+#tbl-chep-control th:nth-child(7),#tbl-chep-control td:nth-child(7){width:9%}
+#tbl-chep-control th:nth-child(8),#tbl-chep-control td:nth-child(8){width:8%}
+#tbl-chep-control th:nth-child(9),#tbl-chep-control td:nth-child(9){width:7%}
+#tbl-chep-control th:nth-child(10),#tbl-chep-control td:nth-child(10){width:9%}
+#tbl-chep-control th:nth-child(11),#tbl-chep-control td:nth-child(11){width:10%}
+#tbl-chep-control th:nth-child(12),#tbl-chep-control td:nth-child(12){width:12.5%;white-space:normal}
 .neg{color:#c0392b;font-weight:600}.pos{color:#1a9e5e;font-weight:600}
 .sec{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#7a8099;border-bottom:1px solid #e0e4f0;padding-bottom:4px;margin:14px 0 8px}
 .foot{margin-top:20px;font-size:9px;color:#aaa;text-align:center;border-top:1px solid #eee;padding-top:6px}`;
@@ -4480,34 +4787,53 @@ const DPO_BLOCKS = [
     id:'B3', name:'Gestión de Activos', icon:'📦', color:'#8b5cf6', mandatory:true,
     questions:[
       {id:'R3.3', txt:'Gestión de activos: paletas CHEP / IFCO / retornables con trazabilidad actualizada', mandatory:true,
-        detail:`<strong>Guidance — Qué se evalúa:</strong><br>
-El distribuidor debe contar con un proceso claro para volver a montar los pallets de activos tras descargar los camiones y enviarlos de vuelta a la cervecería de acuerdo con los estándares de seguridad.<br>
-El proceso de clasificación consiste en separar los activos en buen estado de los activos rotos o con cualquier otro problema que impida su uso.<br>
-La chatarra (scrap) son todos los activos que deben desecharse porque están rotos o presentan cualquier otro problema que impida su uso. Debe definirse claramente en qué puntos se van a verificar.<br>
-El distribuidor debe disponer de una RACI para el proceso de Retorno de Ruta y el envío de envases vacíos a las fábricas de cerveza.<br>
-El distribuidor debe realizar un seguimiento de la utilización y el cumplimiento del sistema en el proceso de Retorno de Ruta y carga de activos para la cervecería (TMS o similar).<br>
-El distribuidor debe medir la inactividad de los activos para garantizar que los activos retornables se envíen a la fábrica de cerveza siempre que sea posible.
-<br><br><strong>Requisitos (qué hace falta cumplir):</strong><br>
-<strong>R3.3.1</strong> — Se define y actualiza el SOP, describiendo la recepción de activos del Retorno Ruta y SOP de proveedores externos, identificando los recibos si es necesario.<br>
-<strong>R3.3.2</strong> — Los activos retornables se envían a la fábrica de cerveza siempre que sea posible para evitar activos ociosos. Se cumple el censo de envases y hay un seguimiento del DS de envases en sinergia con cervecería.<br>
-<strong>R3.3.3</strong> — Se controlan los resultados de la clasificación %descartado y %clasificado a nivel individual (empleado).<br>
-<strong>R3.3.4</strong> — Los objetivos y el desempeño del proceso de clasificación están disponibles para todos los empleados y ellos comprenden su impacto en los resultados.<br>
-<strong>R3.3.5</strong> — Se definen y actualizan los procedimientos estándares para eliminar los residuos de acuerdo con los requisitos medioambientales.<br>
-<strong>R3.3.6</strong> — Eliminación de la chatarra de acuerdo con el estándar.<br>
-<strong>R3.3.7</strong> — Se definen acciones para resolver problemas y mejorar el cumplimiento del plan de activos retornables.
-<br><br><strong>Scoring:</strong><br>
-<span style="color:#22c55e;font-weight:700;">5</span> — Se cumplen todos los requisitos.<br>
-<span style="color:#f59e0b;font-weight:700;">3</span> — Se cumplen R3.3.1 y R3.3.2, pero faltan una o dos de los demás requisitos.<br>
-<span style="color:#ef4444;font-weight:700;">1</span> — Se cumplen R3.3.1 y R3.3.2, pero faltan tres de los demás requisitos.<br>
-<span style="color:#94a3b8;font-weight:700;">0</span> — No se cumplen R3.3.1 y/o R3.3.2, o faltan cuatro o más de los otros requisitos.
-<br><br><strong>How To Check — Cómo se verifica en auditoría:</strong><br>
-<strong>1.</strong> Comprobar si se ha definido y ejecutado un SOP en el que se describa la recepción de activos del Retorno de Ruta o de los proveedores externos, identificando los recibos en caso necesario.<br>
-<strong>2.</strong> Comprobar si los activos retornables se envían a la fábrica de cerveza siempre que sea posible para evitar activos ociosos, de conformidad con el plan de la fábrica de cerveza o de bebidas no alcohólicas. Comprobar si se cumple el censo de envases y si hay seguimiento de DS de envases en sinergia con cervecería.<br>
-<strong>3.</strong> Comprobar si se controlan los resultados de la clasificación (%Descarte y %Clasificado) a nivel individual (empleado). Comprobar si hay seguimiento de No Acreditables.<br>
-<strong>4.</strong> Comprobar si los objetivos y el rendimiento del proceso de clasificación están a disposición de todos los empleados y si comprenden su impacto en los resultados.<br>
-<strong>5.</strong> Comprobar si se ha definido y ejecutado un SOP para eliminar la chatarra de acuerdo con los requisitos medioambientales.<br>
-<strong>6.</strong> Comprobar si se han definido acciones para resolver problemas y mejorar el cumplimiento del plan de activos retornables (% Adherencia distribuidor vs Fábrica).
-<br><br><div style="background:rgba(200,164,53,.12);border:1px solid rgba(200,164,53,.35);border-radius:6px;padding:8px 12px;font-size:11px;"><strong>⚠ Foco H1 2026 — Comentario de auditoría anterior:</strong><br>Se debe trabajar en la zona de clasificación: seguridad (segregación hombres-mujeres) y zona de residuos correspondiente.</div>`
+        detail:`<div class="dpo-detail-grid">
+  <div class="dpo-detail-card">
+    <h4>📘 Guidance — Qué se evalúa</h4>
+    <ul>
+      <li>El distribuidor debe contar con un proceso claro para volver a montar los pallets de activos tras descargar los camiones y enviarlos de vuelta a la cervecería de acuerdo con los estándares de seguridad.</li>
+      <li>El proceso de clasificación consiste en separar los activos en buen estado de los activos rotos o con cualquier otro problema que impida su uso.</li>
+      <li>La chatarra (scrap) son todos los activos que deben desecharse porque están rotos o presentan cualquier otro problema que impida su uso. Debe definirse claramente en qué puntos se van a verificar.</li>
+      <li>El distribuidor debe disponer de una RACI para el proceso de Retorno de Ruta y el envío de envases vacíos a las fábricas de cerveza.</li>
+      <li>El distribuidor debe realizar un seguimiento de la utilización y el cumplimiento del sistema en el proceso de Retorno de Ruta y carga de activos para la cervecería (TMS o similar).</li>
+      <li>El distribuidor debe medir la inactividad de los activos para garantizar que los activos retornables se envíen a la fábrica de cerveza siempre que sea posible.</li>
+    </ul>
+  </div>
+  <div class="dpo-detail-card">
+    <h4>📋 Requisitos — Qué hace falta cumplir</h4>
+    <ul>
+      <li><strong>R3.3.1</strong> — Se define y actualiza el SOP, describiendo la recepción de activos del Retorno Ruta y SOP de proveedores externos, identificando los recibos si es necesario.</li>
+      <li><strong>R3.3.2</strong> — Los activos retornables se envían a la fábrica de cerveza siempre que sea posible para evitar activos ociosos. Se cumple el censo de envases y hay un seguimiento del DS de envases en sinergia con cervecería.</li>
+      <li><strong>R3.3.3</strong> — Se controlan los resultados de la clasificación %descartado y %clasificado a nivel individual (empleado).</li>
+      <li><strong>R3.3.4</strong> — Los objetivos y el desempeño del proceso de clasificación están disponibles para todos los empleados y ellos comprenden su impacto en los resultados.</li>
+      <li><strong>R3.3.5</strong> — Se definen y actualizan los procedimientos estándares para eliminar los residuos de acuerdo con los requisitos medioambientales.</li>
+      <li><strong>R3.3.6</strong> — Eliminación de la chatarra de acuerdo con el estándar.</li>
+      <li><strong>R3.3.7</strong> — Se definen acciones para resolver problemas y mejorar el cumplimiento del plan de activos retornables.</li>
+    </ul>
+  </div>
+  <div class="dpo-detail-card">
+    <h4>🎯 Scoring</h4>
+    <div class="dpo-score-row"><span class="dpo-score-num" style="background:#22c55e;">5</span><span>Se cumplen todos los requisitos.</span></div>
+    <div class="dpo-score-row"><span class="dpo-score-num" style="background:#f59e0b;">3</span><span>Se cumplen R3.3.1 y R3.3.2, pero faltan una o dos de los demás requisitos.</span></div>
+    <div class="dpo-score-row"><span class="dpo-score-num" style="background:#ef4444;">1</span><span>Se cumplen R3.3.1 y R3.3.2, pero faltan tres de los demás requisitos.</span></div>
+    <div class="dpo-score-row"><span class="dpo-score-num" style="background:#94a3b8;">0</span><span>No se cumplen R3.3.1 y/o R3.3.2, o faltan cuatro o más de los otros requisitos.</span></div>
+  </div>
+  <div class="dpo-detail-card">
+    <h4>🔍 Cómo verificar (auditoría)</h4>
+    <ul>
+      <li><strong>1.</strong> Comprobar si se ha definido y ejecutado un SOP en el que se describa la recepción de activos del Retorno de Ruta o de los proveedores externos, identificando los recibos en caso necesario.</li>
+      <li><strong>2.</strong> Comprobar si los activos retornables se envían a la fábrica de cerveza siempre que sea posible para evitar activos ociosos, de conformidad con el plan de la fábrica de cerveza o de bebidas no alcohólicas. Comprobar si se cumple el censo de envases y si hay seguimiento de DS de envases en sinergia con cervecería.</li>
+      <li><strong>3.</strong> Comprobar si se controlan los resultados de la clasificación (%Descarte y %Clasificado) a nivel individual (empleado). Comprobar si hay seguimiento de No Acreditables.</li>
+      <li><strong>4.</strong> Comprobar si los objetivos y el rendimiento del proceso de clasificación están a disposición de todos los empleados y si comprenden su impacto en los resultados.</li>
+      <li><strong>5.</strong> Comprobar si se ha definido y ejecutado un SOP para eliminar la chatarra de acuerdo con los requisitos medioambientales.</li>
+      <li><strong>6.</strong> Comprobar si se han definido acciones para resolver problemas y mejorar el cumplimiento del plan de activos retornables (% Adherencia distribuidor vs Fábrica).</li>
+    </ul>
+  </div>
+  <div class="dpo-detail-card full" style="background:rgba(200,164,53,.12);border-color:rgba(200,164,53,.35);">
+    <h4 style="color:#9a7b1f;">⚠ Foco H1 2026 — Comentario de auditoría anterior</h4>
+    <div style="font-size:12.5px;line-height:1.55;">Se debe trabajar en la zona de clasificación: seguridad (segregación hombres-mujeres) y zona de residuos correspondiente.</div>
+  </div>
+</div>`
       }
     ]
   }
@@ -4632,12 +4958,15 @@ function openDpoModal(qid) {
   document.getElementById('dmoTxt').textContent = q.txt;
   const detailWrap = document.getElementById('dmoDetailWrap');
   const detailBody = document.getElementById('dmoDetail');
+  const modalBox = document.getElementById('dpoModalBox');
   if (q.detail) {
     detailWrap.style.display = '';
     detailBody.innerHTML = q.detail;
+    if(modalBox) modalBox.classList.add('dpo-modal-wide');
   } else {
     detailWrap.style.display = 'none';
     detailBody.innerHTML = '';
+    if(modalBox) modalBox.classList.remove('dpo-modal-wide');
   }
   document.getElementById('dmoEvid').value = d.evid || '';
   // Highlight current status
