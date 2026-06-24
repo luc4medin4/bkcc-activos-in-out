@@ -923,6 +923,15 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
             <div id="se-deuda-sintesis-body"></div>
           </div>
 
+          <div class="analysis-table-card" id="se-deuda-mensual-card">
+            <h3 id="se-deuda-mensual-title">📋 Deuda por Activo — mes por mes (acumulado a fin de cada mes)</h3>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Cuánto quedamos debiendo (o a favor) a la planta por cada activo, al cierre de cada mes del año seleccionado. Negativo = deuda, positivo = a favor.</div>
+            <div class="table-wrap"><table class="a-tbl" id="tbl-se-deuda-mensual">
+              <thead id="thead-se-deuda-mensual"><tr><th>Mes</th></tr></thead>
+              <tbody id="tbody-se-deuda-mensual"></tbody>
+            </table></div>
+          </div>
+
           <div class="analysis-table-card">
             <h3>Por Producto — período seleccionado</h3>
             <div class="table-wrap"><table class="a-tbl" id="tbl-se-prod">
@@ -957,10 +966,19 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
           </div>
 
           <div class="analysis-table-card">
-            <h3 id="nac-daily-title">📅 Análisis Diario NAC — días con registros <span style="font-size:10px;font-weight:400;color:var(--muted)">(% = Bultos NAC ÷ Bultos 2776 Araceli del mismo día)</span></h3>
+            <h3 id="nac-daily-title">📅 Seguimiento Diario NAC — por mes (click en el mes para expandir/colapsar el detalle día por día) <span style="font-size:10px;font-weight:400;color:var(--muted)">(% = Bultos NAC ÷ Bultos 2776 Araceli del mismo día)</span></h3>
             <div class="table-wrap"><table class="a-tbl" id="tbl-nac-daily">
-              <thead><tr><th>Fecha</th><th class="num-r">Bultos NAC</th><th class="num-r">Bultos 2776</th><th class="num-r">% NAC</th><th class="num-r">Target</th><th>Estado</th><th class="num-r">Importe ARS</th></tr></thead>
+              <thead><tr><th>Fecha / Mes</th><th class="num-r">Bultos NAC</th><th class="num-r">Bultos 2776</th><th class="num-r">% NAC</th><th class="num-r">Target</th><th>Estado</th><th class="num-r">Importe ARS</th></tr></thead>
               <tbody id="tbody-nac-daily"></tbody>
+            </table></div>
+          </div>
+
+          <div class="analysis-table-card">
+            <h3>📊 Resumen Anual NAC — comparativo por año</h3>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">2023 excluido a pedido; 2022 sin datos (no se trackeaba NAC todavía).</div>
+            <div class="table-wrap"><table class="a-tbl">
+              <thead><tr><th>Año</th><th class="num-r">Bultos NAC (total)</th><th class="num-r">Importe ARS (total)</th><th class="num-r">% NAC Promedio</th><th>vs Target</th></tr></thead>
+              <tbody id="tbody-nac-anual-resumen"></tbody>
             </table></div>
           </div>
 
@@ -1090,7 +1108,7 @@ table.data-table input[type=number]:focus{border-color:var(--c-navy-light);backg
           <div class="analysis-table-card">
             <h3>📆 Balance Mensual Activos — Año seleccionado</h3>
             <div class="table-wrap"><table class="a-tbl">
-              <thead><tr><th>Mes</th><th class="num-r">Ing. Bultos</th><th class="num-r">Ret. Bultos</th><th class="num-r">Bal. Bultos</th><th class="num-r">Ing. HL</th><th class="num-r">Ret. HL</th><th class="num-r">Bal. HL</th><th class="num-r">Acum. HL</th></tr></thead>
+              <thead><tr><th>Mes</th><th>Tipo de Activo</th><th class="num-r">Ing. Bultos</th><th class="num-r">Ret. Bultos</th><th class="num-r">Bal. Bultos</th><th class="num-r">Ing. HL</th><th class="num-r">Ret. HL</th><th class="num-r">Bal. HL</th><th class="num-r">Acum. HL</th></tr></thead>
               <tbody id="tbody-activos-monthly"></tbody>
             </table></div>
           </div>
@@ -1911,6 +1929,59 @@ function renderDeudaSintesis(yearVal, monthVal) {
     bodyEl.innerHTML = renderDsParqueTable(dsParqueHastaFecha(allRows, null, null));
   }
 }
+// Tabla detallada: cuánto se debe (o está a favor) por cada activo, al cierre de CADA MES del
+// año seleccionado. Columnas = activos relevantes (con deuda/favor distinto de 0 en algún punto
+// del año); filas = meses. Pedido explícito de Lucas (23/6/2026): ver el detalle mes a mes, no
+// solo el total acumulado.
+function renderDeudaMensualPorActivo(yearVal) {
+  const theadEl = document.getElementById('thead-se-deuda-mensual');
+  const tbodyEl = document.getElementById('tbody-se-deuda-mensual');
+  const titleEl = document.getElementById('se-deuda-mensual-title');
+  if(!theadEl || !tbodyEl) return;
+  const allRows = loadStore('se').rows;
+  const y = yearVal ? parseInt(yearVal,10) : new Date().getFullYear();
+  titleEl.textContent = `📋 Deuda por Activo — mes por mes (acumulado a fin de cada mes) · ${y}`;
+
+  // Universo de activos: los que tienen deuda o favor != 0 en al menos un mes de este año.
+  const porMes = {};
+  const activosSet = {};
+  for (let m=1; m<=12; m++) {
+    const mapM = dsParqueHastaFecha(allRows, y, m);
+    porMes[m] = mapM;
+    Object.entries(mapM).forEach(([cod,d])=>{ if(d.total!==0) activosSet[cod]=d.desc; });
+  }
+  const codigos = Object.keys(activosSet).sort((a,b)=>{
+    // CHEP primero, luego por la magnitud de la deuda final (más urgente arriba)
+    if(a==='40517') return -1; if(b==='40517') return 1;
+    return Math.abs(porMes[12][b]?.total||0) - Math.abs(porMes[12][a]?.total||0);
+  });
+
+  if(!codigos.length) {
+    theadEl.innerHTML = '<tr><th>Mes</th></tr>';
+    tbodyEl.innerHTML = '<tr><td style="text-align:center;color:var(--muted);padding:14px;">Sin datos de Salidas-Entradas para este año.</td></tr>';
+    return;
+  }
+
+  theadEl.innerHTML = '<tr><th>Mes</th>' + codigos.map(cod=>{
+    const isChep = cod==='40517';
+    return `<th${isChep?' style="color:var(--c-gold);"':''}>${esc(activosSet[cod])}${isChep?' ★':''}</th>`;
+  }).join('') + '</tr>';
+
+  const now = new Date();
+  const mesActual = (y===now.getFullYear()) ? now.getMonth()+1 : 12;
+  tbodyEl.innerHTML = MESES.map((mesNombre,i)=>{
+    const m = i+1;
+    if (y===now.getFullYear() && m>mesActual) return `<tr style="opacity:.35"><td>${mesNombre}</td>${codigos.map(()=>'<td class="num-r">—</td>').join('')}</tr>`;
+    const mapM = porMes[m];
+    const cells = codigos.map(cod=>{
+      const d = mapM[cod];
+      const total = d ? d.total : 0;
+      const color = total<0 ? 'var(--c-red)' : total>0 ? 'var(--c-teal)' : 'var(--c-green)';
+      return `<td class="num-r" style="color:${color};font-weight:${total!==0?700:400};">${total>=0?'+':''}${fmtN(total)}</td>`;
+    }).join('');
+    return `<tr><td><strong>${mesNombre}</strong></td>${cells}</tr>`;
+  }).join('');
+}
 function autofillSE() {
   const cod=extractCod(document.getElementById('se-cod').value);
   const d=SE_CODE_MAP[cod]; if(d) document.getElementById('se-desc').value=d;
@@ -2381,6 +2452,7 @@ function buildYearlySeriesSE(codFilter) {
   const map={};
   store.rows.forEach(r=>{
     if(codFilter && String(r.cols[5]).trim()!==codFilter) return;
+    if(!codFilter && esBotReco(r.cols[6])) return;
     const yr=String(r.cols[1]||'').trim(); if(!yr) return;
     if(!map[yr]) map[yr]=0;
     map[yr]+=parseFloat(r.cols[9])||0;
@@ -2406,6 +2478,7 @@ function buildSEBalanceAnual(yearVal) {
   let sal=0,ent=0,liq=0,chepLiq=0;
   store.rows.forEach(r=>{
     if(yearVal && String(r.cols[1])!==String(yearVal)) return;
+    if(esBotReco(r.cols[6])) return;
     sal+=parseFloat(r.cols[7])||0; ent+=parseFloat(r.cols[8])||0; liq+=parseFloat(r.cols[9])||0;
     if(String(r.cols[5]).trim()==='40517') chepLiq+=parseFloat(r.cols[9])||0;
   });
@@ -2531,6 +2604,15 @@ function nac_pctParaDia(fechaStr, bultosNAC, mapaDia) {
   return bultosNAC / mapaDia[fechaStr];
 }
 
+// % NAC histórico (2024-2025), extraído de la hoja "Análisis NAC" del archivo maestro
+// (2026_MASTER_-_NAC.xlsx), fila "%" del bloque por año. Se usa solo como respaldo cuando
+// el store 'nac' en vivo no tiene filas para ese año/mes (años viejos no migrados al detalle
+// día por día). 2022 no tiene datos en el archivo maestro (no se trackeaba NAC todavía) y
+// 2023 se excluye a pedido explícito de Lucas (23/6/2026: "2023 no la tomes en cuenta").
+const HIST_NAC_PCT = {
+  '2024': {'01':0.0020650962245301867,'02':0.0015718530991188243,'03':0.0019651919943136677,'04':0.001142983635848176,'05':0.0011077492173339923,'06':0.0012945617881376928,'07':0.00119150728059819,'08':0.004822745144985361,'09':0.003477525339875399,'10':0.004429354053750661,'11':0.0024243828082497255,'12':0.0013957154039374365},
+  '2025': {'01':0.0010618007701494899,'02':0.005009935153076405,'03':0.0027645820698048514,'04':0.002252953604829901,'05':0.005026717765145505,'06':0.002464190993971611,'07':0.0030740103635110553,'08':0.001366744629923572,'09':0.0031967075121403232,'10':0.002810426818743112,'11':0.0029,'12':0.004}
+};
 function nac_calcMensual(yearVal) {
   // Devuelve {mes(1-12): {bultos, importe, bultos2776, pct|null}} usando datos reales del store 'nac' + retiros
   const store = loadStore('nac');
@@ -2547,6 +2629,12 @@ function nac_calcMensual(yearVal) {
     const b2776 = nac_totalBultos2776Mes(yearVal, mo);
     monthMap[mo].bultos2776 = b2776;
     monthMap[mo].pct = b2776 ? monthMap[mo].bultos / b2776 : null;
+    // Respaldo histórico: si no hay datos en vivo para este año/mes, pero el archivo maestro
+    // sí tiene el % NAC de ese período, lo usamos (marcado como histórico).
+    if (monthMap[mo].pct===null && HIST_NAC_PCT[String(yearVal)] && HIST_NAC_PCT[String(yearVal)][mo]!==undefined) {
+      monthMap[mo].pct = HIST_NAC_PCT[String(yearVal)][mo];
+      monthMap[mo].historico = true;
+    }
   });
   return monthMap;
 }
@@ -2608,13 +2696,15 @@ function renderNACComparativoYCruzada() {
   const allYears = new Set((store?store.rows:[]).map(r=>String(r.cols[1])).filter(Boolean));
   const now = new Date();
   allYears.add(String(now.getFullYear()));
+  Object.keys(HIST_NAC_PCT).forEach(yr=>allYears.add(yr)); // 2024, 2025 (histórico del archivo maestro)
+  allYears.delete('2023'); // excluido a pedido explícito de Lucas (23/6/2026): "2023 no la tomes en cuenta"
   const years = [...allYears].sort();
 
   // --- Comparativo: promedio anual (omite años sin ningún dato, ej. si un año no tiene filas NAC) ---
   const compRows = years.map(yr=>{
     const mm = nac_calcMensual(yr);
-    const hasAnyRow = (store?store.rows:[]).some(r=>String(r.cols[1])===yr);
-    if(!hasAnyRow) return null; // sin datos → se omite (ej. 2023 sin info, como pidió Lucas)
+    const hasAnyRow = (store?store.rows:[]).some(r=>String(r.cols[1])===yr) || !!HIST_NAC_PCT[yr];
+    if(!hasAnyRow) return null; // sin datos → se omite (ej. 2022, sin tracking NAC todavía)
     let avg = nac_promedioAnual(mm);
     let imputado = false;
     // Promedio de imputación: si es el año en curso y falta enero por no tener facturación NAC ese mes,
@@ -2733,7 +2823,7 @@ function renderAnalysis() {
   let totalSal=0,totalEnt=0,totalLiq=0;
   const chepRows=seRows.filter(r=>r.cols[5]==='40517');
   let chepSal=0,chepEnt=0,chepLiq=0;
-  seRows.forEach(r=>{ totalSal+=parseFloat(r.cols[7])||0; totalEnt+=parseFloat(r.cols[8])||0; totalLiq+=parseFloat(r.cols[9])||0; });
+  seRows.forEach(r=>{ if(esBotReco(r.cols[6])) return; totalSal+=parseFloat(r.cols[7])||0; totalEnt+=parseFloat(r.cols[8])||0; totalLiq+=parseFloat(r.cols[9])||0; });
   chepRows.forEach(r=>{ chepSal+=parseFloat(r.cols[7])||0; chepEnt+=parseFloat(r.cols[8])||0; chepLiq+=parseFloat(r.cols[9])||0; });
   const remitos=new Set(seRows.map(r=>r.cols[4])).size;
   document.getElementById('se-stats').innerHTML=`
@@ -2795,6 +2885,9 @@ function renderAnalysis() {
 
   // --- Síntesis de Deuda a Planta — respeta el filtro Mes/Año seleccionado ---
   renderDeudaSintesis(yearVal, monthVal);
+
+  // --- Deuda por Activo, mes por mes (detalle del año seleccionado) ---
+  renderDeudaMensualPorActivo(yearVal);
 
   // --- NAC por Planta ---
   const plantaMap={};
@@ -2928,6 +3021,7 @@ function renderAnalysis() {
   // Monthly balance tables
   renderSEMonthlyBalance();
   renderNACDailyTable();
+  renderNACAnnualSummary();
   renderNACMonthlyTable();
 }
 
@@ -2991,6 +3085,7 @@ function activosExport_parseRows(store) {
   const h=(store&&store.headers)||[];
   const aYearIdx=h.indexOf('Fecha - Año'); const aMonthIdx=h.indexOf('Fecha - Mes');
   const aMovIdx=h.indexOf('Movimiento'); const aBultosIdx=h.indexOf('Bultos'); const aHLIdx=h.indexOf('HL');
+  const aCalibreIdx=h.indexOf('Calibre');
   const monthNames=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   return (store?store.rows:[]).map(r=>{
     const yr=String(r.cols[aYearIdx>=0?aYearIdx:5]||'');
@@ -3001,7 +3096,8 @@ function activosExport_parseRows(store) {
     const bultos=Math.abs(parseFloat(r.cols[aBultosIdx>=0?aBultosIdx:9])||0);
     const hl=Math.abs(parseFloat(r.cols[aHLIdx>=0?aHLIdx:10])||0);
     const isIng=mov.toLowerCase().includes('ingreso');
-    return {yr, mo, bultos, hl, isIng};
+    const calibre=r.cols[aCalibreIdx>=0?aCalibreIdx:3]||'S/D';
+    return {yr, mo, bultos, hl, isIng, calibre};
   });
 }
 function renderActivosExportMonthly(yearVal) {
@@ -3009,17 +3105,29 @@ function renderActivosExportMonthly(yearVal) {
   if(!tbody) return;
   const store=loadStore('activos');
   const parsed=activosExport_parseRows(store).filter(r=>!yearVal||r.yr===yearVal);
-  const mmap={};
-  MESES.forEach((_,i)=>{ mmap[String(i+1).padStart(2,'0')]={ingB:0,retB:0,ingH:0,retH:0}; });
-  parsed.forEach(r=>{ if(!mmap[r.mo]) return; if(r.isIng){mmap[r.mo].ingB+=r.bultos;mmap[r.mo].ingH+=r.hl;}else{mmap[r.mo].retB+=r.bultos;mmap[r.mo].retH+=r.hl;} });
-  let accumH=0;
-  tbody.innerHTML=MESES.map((mes,i)=>{
-    const m=String(i+1).padStart(2,'0');
-    const d=mmap[m];
-    if(!d.ingB&&!d.retB) return `<tr style="opacity:.4"><td>${mes}</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td>—</td></tr>`;
-    const balB=d.ingB-d.retB; const balH=d.ingH-d.retH; accumH+=balH;
-    const col=balH<0?'var(--c-red)':balH>0?'var(--c-teal)':'var(--c-green)';
-    return `<tr><td><strong>${mes}</strong></td><td class="num-r">${fmtN(d.ingB)}</td><td class="num-r">${fmtN(d.retB)}</td><td class="num-r" style="color:${col};">${balB>=0?'+':''}${fmtN(balB)}</td><td class="num-r">${d.ingH.toFixed(1)}</td><td class="num-r">${d.retH.toFixed(1)}</td><td class="num-r" style="color:${col};font-weight:700;">${balH>=0?'+':''}${balH.toFixed(1)}</td><td class="num-r" style="color:${accumH<0?'var(--c-red)':'var(--c-teal)'}">${accumH>=0?'+':''}${accumH.toFixed(1)}</td></tr>`;
+  if(!parsed.length){ tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:14px;">Sin datos de Export Activos para este año.</td></tr>`; return; }
+  // Acumulado de HL corre por separado para cada Tipo de Activo (Calibre), a lo largo del año.
+  const acumPorCalibre = {};
+  const filas = [];
+  for (let m=1; m<=12; m++) {
+    const mo = String(m).padStart(2,'0');
+    const rowsMes = parsed.filter(r=>r.mo===mo);
+    if(!rowsMes.length) continue;
+    const porCalibre = {};
+    rowsMes.forEach(r=>{
+      if(!porCalibre[r.calibre]) porCalibre[r.calibre]={ingB:0,retB:0,ingH:0,retH:0};
+      if(r.isIng){porCalibre[r.calibre].ingB+=r.bultos;porCalibre[r.calibre].ingH+=r.hl;}else{porCalibre[r.calibre].retB+=r.bultos;porCalibre[r.calibre].retH+=r.hl;}
+    });
+    Object.entries(porCalibre).sort((a,b)=>(b[1].ingH+b[1].retH)-(a[1].ingH+a[1].retH)).forEach(([calibre,d])=>{
+      const balB=d.ingB-d.retB, balH=d.ingH-d.retH;
+      acumPorCalibre[calibre] = (acumPorCalibre[calibre]||0) + balH;
+      filas.push({mes:MESES[m-1], calibre, ingB:d.ingB, retB:d.retB, balB, ingH:d.ingH, retH:d.retH, balH, acum:acumPorCalibre[calibre]});
+    });
+  }
+  tbody.innerHTML = filas.map(f=>{
+    const col=f.balH<0?'var(--c-red)':f.balH>0?'var(--c-teal)':'var(--c-green)';
+    const colAcum=f.acum<0?'var(--c-red)':'var(--c-teal)';
+    return `<tr><td><strong>${f.mes}</strong></td><td><span class="badge">${esc(f.calibre)}</span></td><td class="num-r">${fmtN(f.ingB)}</td><td class="num-r">${fmtN(f.retB)}</td><td class="num-r" style="color:${col};">${f.balB>=0?'+':''}${fmtN(f.balB)}</td><td class="num-r">${f.ingH.toFixed(1)}</td><td class="num-r">${f.retH.toFixed(1)}</td><td class="num-r" style="color:${col};font-weight:700;">${f.balH>=0?'+':''}${f.balH.toFixed(1)}</td><td class="num-r" style="color:${colAcum}">${f.acum>=0?'+':''}${f.acum.toFixed(1)}</td></tr>`;
   }).join('');
 }
 function renderActivosExportAnual() {
@@ -3050,7 +3158,7 @@ function buildMonthlyChep(yearVal) {
 function buildMonthlySELiq(yearVal) {
   const store=loadStore('se'); if(!store) return [];
   const map={};
-  store.rows.filter(r=>(!yearVal||String(r.cols[1])===String(yearVal))).forEach(r=>{
+  store.rows.filter(r=>(!yearVal||String(r.cols[1])===String(yearVal))&&!esBotReco(r.cols[6])).forEach(r=>{
     const m=String(r.cols[2]).padStart(2,'0');
     map[m]=(map[m]||0)+(parseFloat(r.cols[9])||0);
   });
@@ -3128,12 +3236,6 @@ function downloadSectionPDF(section) {
     let totalSal=0,totalEnt=0,totalLiq=0,chepLiq=0;
     seRows.forEach(r=>{totalSal+=parseFloat(r.cols[7])||0;totalEnt+=parseFloat(r.cols[8])||0;totalLiq+=parseFloat(r.cols[9])||0;if(r.cols[5]==='40517')chepLiq+=parseFloat(r.cols[9])||0;});
     const remitos=new Set(seRows.map(r=>r.cols[4])).size;
-    // DS por producto (all data)
-    const allSE=loadStore('se'); const dsMap2=computeDSParqueMap(allSE?allSE.rows:[]);
-    const dsByProd={};
-    Object.entries(dsMap2).forEach(([k,v])=>{ const parts=k.split('|'); const cod=parts[2]; const desc=(allSE.rows.find(r=>r.cols[5]===cod)||{cols:[]}).cols[6]||cod; if(!dsByProd[cod]) dsByProd[cod]={desc,total:0}; dsByProd[cod].total+=v; });
-    const seMap2={};
-    seRows.forEach(r=>{ const k=r.cols[5]; if(!seMap2[k]) seMap2[k]={desc:r.cols[6],sal:0,ent:0,liq:0}; seMap2[k].sal+=parseFloat(r.cols[7])||0;seMap2[k].ent+=parseFloat(r.cols[8])||0;seMap2[k].liq+=parseFloat(r.cols[9])||0; });
     body=`<div style="background:#fff8e6;border:1px solid #f0d98c;border-left:3px solid #b8860b;border-radius:6px;padding:8px 10px;margin-bottom:12px;font-size:9.5px;color:#5c4a1a;line-height:1.5;">
       ℹ️ <strong>Aclaración de términos:</strong> "Salidas" = activos que Quilmes planta nos envía a nosotros. "Entradas" = activos que nosotros le devolvemos a planta en cada camión de acarreo. Es la inversión que usa la boleta oficial de planta.
     </div>
@@ -3143,14 +3245,6 @@ function downloadSectionPDF(section) {
       <div class="kpi"><div class="lbl">Entradas</div><div class="val grn">${fmtN(totalEnt)}</div></div>
       <div class="kpi"><div class="lbl">A Liquidar</div><div class="val ${totalLiq<0?'red':'grn'}">${totalLiq>=0?'+':''}${fmtN(totalLiq)}</div></div>
     </div>
-    <div class="sec">DS Parque — Deuda acumulada a la Planta</div>
-    <table><thead><tr><th>Cód</th><th>Descripción</th><th class="num">DS Acumulado</th><th>Estado</th></tr></thead><tbody>
-    ${Object.entries(dsByProd).sort((a,b)=>a[1].total-b[1].total).map(([cod,d])=>`<tr><td>${cod}</td><td>${d.desc}</td><td class="num ${d.total<0?'neg':'pos'}">${d.total>=0?'+':''}${fmtN(d.total)}</td><td>${d.total<0?'⚠ DEUDA':'✓ OK'}</td></tr>`).join('')}
-    </tbody></table>
-    <div class="sec">Por Producto — período</div>
-    <table><thead><tr><th>Cód</th><th>Descripción</th><th class="num">Salidas</th><th class="num">Entradas</th><th class="num">A Liquidar</th></tr></thead><tbody>
-    ${Object.entries(seMap2).sort((a,b)=>Math.abs(b[1].liq)-Math.abs(a[1].liq)).map(([k,d])=>`<tr><td>${k}</td><td>${d.desc}</td><td class="num">${fmtN(d.sal)}</td><td class="num">${fmtN(d.ent)}</td><td class="num ${d.liq<0?'neg':'pos'}">${d.liq>=0?'+':''}${fmtN(d.liq)}</td></tr>`).join('')}
-    </tbody></table>
     <div class="sec">📝 Narrativa — qué pasó con cada remito</div>
     <div style="font-size:10px;line-height:1.6;">${buildSENarrativa(seRows,{limit:0,pdf:true})}</div>`;
   } else if(section==='nac'){
@@ -3376,6 +3470,7 @@ function renderSEMonthlyBalance() {
     if(yr !== curYear) return;
     const mo = String(r.cols[2]).padStart(2,'0');
     if(!monthMap[mo]) return;
+    if (esBotReco(r.cols[6])) return; // excluido a pedido: bot. reco no es activo retornable, distorsiona el balance S/E
     const sal = parseFloat(r.cols[7])||0;
     const ent = parseFloat(r.cols[8])||0;
     monthMap[mo].sal += sal;
@@ -3429,25 +3524,103 @@ function renderNACDailyTable() {
   const moFilter = (currentPeriod==='month' && monthVal && monthVal!=='00') ? monthVal : null;
   const tbody = document.getElementById('tbody-nac-daily');
   if(!tbody) return;
-  const dias = nac_calcDiario(yearVal||String(new Date().getFullYear()), moFilter);
+  const yr = yearVal||String(new Date().getFullYear());
+  if (yr === '2023') { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:14px;">2023 excluido del seguimiento diario NAC.</td></tr>`; return; }
+  const dias = nac_calcDiario(yr, moFilter);
   if(!dias.length){
     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:14px;">Sin registros NAC en el período seleccionado.</td></tr>`;
     return;
   }
   const TARGET_LBL = (NAC_TARGET_PCT*100).toFixed(3)+'%';
-  tbody.innerHTML = dias.map(d=>{
+  const dayRowHtml = (d, indent) => {
     const pctStr = d.pct!==null ? (d.pct*100).toFixed(3)+'%' : '—';
     const sobre = d.pct!==null && d.pct > NAC_TARGET_PCT;
     const color = d.pct===null ? 'var(--muted)' : sobre ? 'var(--c-red)' : 'var(--c-green)';
     const dot = d.pct===null ? '—' : sobre ? '🔴 Sobre' : '🟢 OK';
-    return `<tr>
-      <td style="font-family:var(--font-mono);font-size:11px;"><strong>${esc(d.fecha)}</strong></td>
+    return `<tr${indent?` class="${indent}" style="display:none;"`:''}>
+      <td style="font-family:var(--font-mono);font-size:11px;${indent?'padding-left:26px;color:var(--c-ink-soft);':''}"><strong>${esc(d.fecha)}</strong></td>
       <td class="num-r">${d.bultos.toFixed(2)}</td>
       <td class="num-r" style="color:var(--c-ink-soft);">${d.bultos2776!==null?fmtN(d.bultos2776):'—'}</td>
       <td class="num-r" style="color:${color};font-weight:${sobre?700:400};">${pctStr}</td>
       <td class="num-r" style="opacity:.6;">${TARGET_LBL}</td>
       <td><span style="color:${color};font-size:11px;font-weight:600;">${dot}</span></td>
       <td class="num-r" style="color:var(--c-red);">${fmtARS(d.importe)}</td>
+    </tr>`;
+  };
+
+  if (moFilter) {
+    // Mes puntual seleccionado: lista plana, sin necesidad de acordeón (ya está filtrado a 1 mes).
+    tbody.innerHTML = dias.map(d=>dayRowHtml(d,null)).join('');
+    return;
+  }
+
+  // Vista anual: agrupar por mes — fila resumen (colapsada por defecto) + filas de detalle día por día.
+  const porMes = {};
+  dias.forEach(d=>{
+    const p = d.fecha.split('/'); // d/m/yyyy
+    const mo = p.length===3 ? p[1].padStart(2,'0') : '00';
+    if(!porMes[mo]) porMes[mo] = [];
+    porMes[mo].push(d);
+  });
+  const mesesConDatos = Object.keys(porMes).sort((a,b)=>parseInt(b,10)-parseInt(a,10)); // mes más reciente primero
+  tbody.innerHTML = mesesConDatos.map(mo=>{
+    const diasMes = porMes[mo];
+    const sumBultos = diasMes.reduce((s,d)=>s+d.bultos,0);
+    const sumImporte = diasMes.reduce((s,d)=>s+d.importe,0);
+    const b2776Mes = nac_totalBultos2776Mes(yr, mo);
+    const pctMes = b2776Mes ? sumBultos/b2776Mes : null;
+    const sobre = pctMes!==null && pctMes > NAC_TARGET_PCT;
+    const color = pctMes===null ? 'var(--muted)' : sobre ? 'var(--c-red)' : 'var(--c-green)';
+    const dot = pctMes===null ? '—' : sobre ? '🔴 Sobre' : '🟢 OK';
+    const claseGrupo = `nac-mes-grp-${yr}-${mo}`;
+    const headerRow = `<tr class="nac-month-hdr" id="nac-month-hdr-${yr}-${mo}" onclick="toggleNacMonth('${yr}-${mo}')" style="cursor:pointer;background:var(--surface2);font-weight:700;">
+      <td><span class="nac-toggle-icon" style="display:inline-block;width:14px;">▸</span>${MESES[parseInt(mo,10)-1]} <span style="font-size:9px;font-weight:400;color:var(--muted);">(${diasMes.length} día${diasMes.length!==1?'s':''})</span></td>
+      <td class="num-r">${sumBultos.toFixed(2)}</td>
+      <td class="num-r" style="color:var(--c-ink-soft);">${b2776Mes?fmtN(b2776Mes):'—'}</td>
+      <td class="num-r" style="color:${color};">${pctMes!==null?(pctMes*100).toFixed(3)+'%':'—'}</td>
+      <td class="num-r" style="opacity:.6;">${TARGET_LBL}</td>
+      <td><span style="color:${color};font-size:11px;">${dot}</span></td>
+      <td class="num-r" style="color:var(--c-red);">${fmtARS(sumImporte)}</td>
+    </tr>`;
+    const detailRows = diasMes.map(d=>dayRowHtml(d, claseGrupo)).join('');
+    return headerRow + detailRows;
+  }).join('');
+}
+function toggleNacMonth(key) {
+  const rows = document.querySelectorAll('.nac-mes-grp-'+key);
+  if(!rows.length) return;
+  const isHidden = rows[0].style.display === 'none';
+  rows.forEach(r => r.style.display = isHidden ? '' : 'none');
+  const hdr = document.getElementById('nac-month-hdr-'+key);
+  const icon = hdr ? hdr.querySelector('.nac-toggle-icon') : null;
+  if(icon) icon.textContent = isHidden ? '▾' : '▸';
+}
+function renderNACAnnualSummary() {
+  const tbody = document.getElementById('tbody-nac-anual-resumen');
+  if(!tbody) return;
+  const store = loadStore('nac');
+  const liveYears = new Set((store?store.rows:[]).map(r=>String(r.cols[1])).filter(Boolean));
+  const now = new Date();
+  liveYears.add(String(now.getFullYear()));
+  Object.keys(HIST_NAC_PCT).forEach(yr=>liveYears.add(yr));
+  liveYears.delete('2023'); // excluido a pedido de Lucas
+  liveYears.delete('2022'); // sin datos (no se trackeaba NAC todavía)
+  const years = [...liveYears].sort();
+  tbody.innerHTML = years.map(yr=>{
+    const mm = nac_calcMensual(yr);
+    let sumBultos=0, sumImporte=0, nMeses=0;
+    Object.values(mm).forEach(d=>{ if(d.pct!==null){ sumBultos+=d.bultos; sumImporte+=d.importe; nMeses++; } });
+    const avg = nac_promedioAnual(mm);
+    if(avg===null) return `<tr style="opacity:.4"><td><strong>${yr}</strong></td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td>Sin datos</td></tr>`;
+    const sobre = avg > NAC_TARGET_PCT;
+    const color = sobre ? 'var(--c-red)' : 'var(--c-green)';
+    const dot = sobre ? '🔴 Sobre target' : '🟢 Dentro de target';
+    return `<tr>
+      <td><strong>${yr}</strong></td>
+      <td class="num-r">${fmtN(sumBultos)}</td>
+      <td class="num-r" style="color:var(--c-red);">${sumImporte?fmtARS(sumImporte):'—'}</td>
+      <td class="num-r" style="color:${color};font-weight:700;">${(avg*100).toFixed(3)}%</td>
+      <td><span style="color:${color};font-size:11px;">${dot}</span></td>
     </tr>`;
   }).join('');
 }
@@ -3474,6 +3647,24 @@ function renderNACMonthlyTable() {
     monthMap[mo].bultos2776 = b2776;
     monthMap[mo].pct = b2776 ? monthMap[mo].bultos / b2776 : null;
   });
+  // Promedio del año en curso (pedido Lucas 23/6/2026): los meses pasados sin datos (ej. Enero,
+  // si no hay facturación NAC cargada ese mes) se completan con el promedio de % NAC de los
+  // meses del mismo año que SÍ tienen datos, en vez de dejarlos en blanco. Nunca se imputan
+  // meses futuros (todavía no transcurridos).
+  const curMonthNum = now.getMonth()+1;
+  const mesesConDatoReal = Object.keys(monthMap).filter(mo => monthMap[mo].pct!==null);
+  const pctsReales = mesesConDatoReal.map(mo=>monthMap[mo].pct);
+  const pctPromedio2026 = pctsReales.length ? pctsReales.reduce((a,b)=>a+b,0)/pctsReales.length : null;
+  const bultosPromedio2026 = mesesConDatoReal.length ? mesesConDatoReal.reduce((s,mo)=>s+monthMap[mo].bultos,0)/mesesConDatoReal.length : 0;
+  Object.keys(monthMap).forEach(mo=>{
+    const moNum = parseInt(mo,10);
+    const sinDatos = monthMap[mo].importe===0 && monthMap[mo].bultos===0;
+    if (sinDatos && moNum <= curMonthNum && pctPromedio2026!==null) {
+      monthMap[mo].imputado = true;
+      monthMap[mo].pct = pctPromedio2026;
+      monthMap[mo].bultos = bultosPromedio2026;
+    }
+  });
   let accumImp = 0;
   const TARGET_LBL = (NAC_TARGET_PCT*100).toFixed(3)+'%';
   const tbody = document.getElementById('tbody-nac-monthly');
@@ -3481,24 +3672,28 @@ function renderNACMonthlyTable() {
   tbody.innerHTML = MESES.map((mes,i)=>{
     const m = String(i+1).padStart(2,'0');
     const d = monthMap[m];
-    if(d.importe === 0 && d.bultos === 0) return `<tr style="opacity:.4"><td>${mes}</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">${TARGET_LBL}</td><td>—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td></tr>`;
+    const moNum = i+1;
+    if(d.importe === 0 && d.bultos === 0 && !d.imputado) {
+      if (moNum > curMonthNum) return `<tr style="opacity:.4"><td>${mes}</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">${TARGET_LBL}</td><td>—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td><td class="num-r">—</td></tr>`;
+    }
     accumImp += d.importe;
     const usd = usdRate > 0 ? (d.importe / usdRate) : 0;
     const pctStr = d.pct!==null ? (d.pct*100).toFixed(3)+'%' : '—';
     const sobre = d.pct!==null && d.pct > NAC_TARGET_PCT;
     const color = d.pct===null ? 'var(--muted)' : sobre ? 'var(--c-red)' : 'var(--c-green)';
     const dot = d.pct===null ? '—' : sobre ? '🔴' : '🟢';
-    return `<tr>
-      <td><strong>${mes}</strong></td>
-      <td class="num-r">${d.bultos.toFixed(2)}</td>
+    const imputBadge = d.imputado ? ' <span title="Sin facturación NAC cargada para este mes; se muestra el promedio de % NAC de los meses del año con datos reales" style="font-size:9px;font-weight:400;color:var(--muted);">(promedio 2026)</span>' : '';
+    return `<tr${d.imputado?' style="opacity:.85;"':''}>
+      <td><strong>${mes}</strong>${imputBadge}</td>
+      <td class="num-r">${d.imputado?'≈':''}${d.bultos.toFixed(2)}</td>
       <td class="num-r" style="color:var(--c-ink-soft);">${d.bultos2776!==null?fmtN(d.bultos2776):'—'}</td>
-      <td class="num-r" style="color:${color};font-weight:${sobre?700:400};">${pctStr}</td>
+      <td class="num-r" style="color:${color};font-weight:${sobre?700:400};">${d.imputado?'≈':''}${pctStr}</td>
       <td class="num-r" style="opacity:.6;">${TARGET_LBL}</td>
       <td><span style="color:${color};font-weight:600;font-size:11px;">${dot}</span></td>
-      <td class="num-r" style="color:var(--c-red);">${fmtARS(d.importe)}</td>
-      <td class="num-r" style="color:var(--c-amber);">USD ${usd.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td>
-      <td class="num-r">${fmtARS(accumImp)}</td>
-      <td class="num-r">${d.facturas.size}</td>
+      <td class="num-r" style="color:var(--c-red);">${d.imputado?'—':fmtARS(d.importe)}</td>
+      <td class="num-r" style="color:var(--c-amber);">${d.imputado?'—':'USD '+usd.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td>
+      <td class="num-r">${d.imputado?'—':fmtARS(accumImp)}</td>
+      <td class="num-r">${d.imputado?'—':d.facturas.size}</td>
     </tr>`;
   }).join('');
 }
